@@ -1,0 +1,187 @@
+import { useState, useEffect } from 'react';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import WidgetCard from './WidgetCard';
+import GreetingWidget from '../widgets/GreetingWidget';
+import WeatherWidget from '../widgets/WeatherWidget';
+import CalendarWidget from '../widgets/CalendarWidget';
+import GmailWidget from '../widgets/GmailWidget';
+import TasksWidget from '../widgets/TasksWidget';
+import StravaWidget from '../widgets/StravaWidget';
+import GoalsWidget from '../widgets/GoalsWidget';
+import { saveToken, isAuthenticated, clearToken } from '../../services/google-auth';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+const SCOPES = [
+  'https://www.googleapis.com/auth/gmail.readonly',
+  'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/tasks',
+].join(' ');
+
+function DashboardInner() {
+  const [authed, setAuthed] = useState(isAuthenticated());
+
+  useEffect(() => { setAuthed(isAuthenticated()); }, []);
+
+  const login = useGoogleLogin({
+    scope: SCOPES,
+    onSuccess: (response) => {
+      saveToken(response.access_token, response.expires_in ?? 3600);
+      setAuthed(true);
+    },
+    onError: (err) => console.error('Google login failed', err),
+  });
+
+  function handleLogout() {
+    clearToken();
+    setAuthed(false);
+  }
+
+  return (
+    <div className="min-h-screen flex flex-col gap-5" style={{ padding: '24px 28px' }}>
+
+      {/* Header */}
+      <WidgetCard className="w-full">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <GreetingWidget />
+          </div>
+          <div className="flex-shrink-0">
+            {authed ? (
+              <button
+                onClick={handleLogout}
+                style={{
+                  fontSize: 12, fontWeight: 500, color: '#9CA3AF',
+                  background: 'transparent', border: 'none',
+                  padding: '6px 12px', borderRadius: 10,
+                  cursor: 'pointer', fontFamily: 'inherit',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLButtonElement).style.color = '#6B7280';
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.05)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF';
+                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                }}
+              >
+                Abmelden
+              </button>
+            ) : (
+              <button
+                onClick={() => login()}
+                className="group flex items-center gap-3 whitespace-nowrap"
+                style={{
+                  padding: '10px 20px',
+                  background: 'rgba(255,255,255,0.75)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255,255,255,0.7)',
+                  borderRadius: 14,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.9)';
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.95)';
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.75)';
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)';
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+                }}
+              >
+                <GoogleIcon />
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#374151', letterSpacing: -0.1 }}>
+                  <span className="hidden sm:inline">Mit Google anmelden</span>
+                  <span className="sm:hidden">Anmelden</span>
+                </span>
+              </button>
+            )}
+          </div>
+        </div>
+      </WidgetCard>
+
+      {/* Row 1: Calendar (breiter) + Gmail (schmaler) */}
+      <div className="hidden lg:grid gap-5" style={{ gridTemplateColumns: '1.7fr 1fr' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '500px' }}>
+          <CalendarWidget authenticated={authed} />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '500px' }}>
+          <GmailWidget authenticated={authed} />
+        </WidgetCard>
+      </div>
+
+      {/* Row 2: Wetter | To-Do | Strava — gleiche Breite */}
+      <div className="hidden lg:grid grid-cols-3 gap-5">
+        <WidgetCard className="p-0 overflow-hidden" style={{ height: '300px' }}>
+          <WeatherWidget />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
+          <TasksWidget authenticated={authed} />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
+          <StravaWidget />
+        </WidgetCard>
+      </div>
+
+      {/* Row 3: Monatsziele | Wochenziele */}
+      <div className="hidden lg:grid grid-cols-2 gap-5">
+        <WidgetCard className="flex flex-col" style={{ height: '280px' }}>
+          <GoalsWidget period="month" />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '280px' }}>
+          <GoalsWidget period="week" />
+        </WidgetCard>
+      </div>
+
+      {/* Mobile fallback */}
+      <div className="flex flex-col gap-5 lg:hidden">
+        <WidgetCard className="flex flex-col" style={{ height: '480px' }}>
+          <CalendarWidget authenticated={authed} />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '360px' }}>
+          <GmailWidget authenticated={authed} />
+        </WidgetCard>
+        <WidgetCard className="p-0 overflow-hidden" style={{ height: '260px' }}>
+          <WeatherWidget />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ minHeight: '260px' }}>
+          <StravaWidget />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '260px' }}>
+          <TasksWidget authenticated={authed} />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ minHeight: '260px' }}>
+          <GoalsWidget period="month" />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ minHeight: '260px' }}>
+          <GoalsWidget period="week" />
+        </WidgetCard>
+      </div>
+    </div>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <DashboardInner />
+    </GoogleOAuthProvider>
+  );
+}
