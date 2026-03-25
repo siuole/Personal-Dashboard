@@ -28,6 +28,7 @@ const AVATAR_PALETTES = [
   { bg: 'rgba(2,132,199,0.14)',  text: '#0284C7' },
 ];
 function avatarPalette(name: string) {
+  if (!name) return AVATAR_PALETTES[0];
   return AVATAR_PALETTES[name.charCodeAt(0) % AVATAR_PALETTES.length];
 }
 

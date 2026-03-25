@@ -1,6 +1,7 @@
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
-const LAT = import.meta.env.VITE_OPENWEATHER_LAT;
-const LON = import.meta.env.VITE_OPENWEATHER_LON;
+
+const GEO_CACHE_KEY = 'weather_geo_cache';
+const GEO_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 export interface CurrentWeather {
   temp: number;
@@ -22,9 +23,31 @@ export interface ForecastDay {
   conditionId: number;
 }
 
+async function getCoords(): Promise<{ lat: number; lon: number }> {
+  const cached = localStorage.getItem(GEO_CACHE_KEY);
+  if (cached) {
+    const { lat, lon, ts } = JSON.parse(cached);
+    if (Date.now() - ts < GEO_CACHE_TTL) return { lat, lon };
+  }
+
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat, lon, ts: Date.now() }));
+        resolve({ lat, lon });
+      },
+      () => reject(new Error('Standort nicht verfügbar')),
+      { timeout: 8000 }
+    );
+  });
+}
+
 export async function fetchCurrentWeather(): Promise<CurrentWeather> {
+  const { lat, lon } = await getCoords();
   const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=de`
+    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=de`
   );
   if (!res.ok) throw new Error('Weather fetch failed');
   const data = await res.json();
@@ -41,13 +64,13 @@ export async function fetchCurrentWeather(): Promise<CurrentWeather> {
 }
 
 export async function fetchForecast(): Promise<ForecastDay[]> {
+  const { lat, lon } = await getCoords();
   const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&appid=${API_KEY}&units=metric&lang=de`
+    `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=de`
   );
   if (!res.ok) throw new Error('Forecast fetch failed');
   const data = await res.json();
 
-  // Group by day, pick midday entry
   const byDay: Record<string, typeof data.list[0][]> = {};
   for (const entry of data.list) {
     const day = entry.dt_txt.split(' ')[0];
