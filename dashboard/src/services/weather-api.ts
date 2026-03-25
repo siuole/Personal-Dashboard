@@ -1,4 +1,6 @@
 const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
+const FALLBACK_LAT = import.meta.env.VITE_OPENWEATHER_LAT;
+const FALLBACK_LON = import.meta.env.VITE_OPENWEATHER_LON;
 
 const GEO_CACHE_KEY = 'weather_geo_cache';
 const GEO_CACHE_TTL = 60 * 60 * 1000; // 1 hour
@@ -30,7 +32,7 @@ async function getCoords(): Promise<{ lat: number; lon: number }> {
     if (Date.now() - ts < GEO_CACHE_TTL) return { lat, lon };
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const lat = pos.coords.latitude;
@@ -38,7 +40,7 @@ async function getCoords(): Promise<{ lat: number; lon: number }> {
         localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat, lon, ts: Date.now() }));
         resolve({ lat, lon });
       },
-      () => reject(new Error('Standort nicht verfügbar')),
+      () => resolve({ lat: Number(FALLBACK_LAT), lon: Number(FALLBACK_LON) }),
       { timeout: 8000 }
     );
   });
