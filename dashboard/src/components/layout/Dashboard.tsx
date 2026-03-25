@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 import WidgetCard from './WidgetCard';
 import GreetingWidget from '../widgets/GreetingWidget';
 import WeatherWidget from '../widgets/WeatherWidget';
@@ -21,33 +20,42 @@ const SCOPES = [
 function DashboardInner() {
   const [authed, setAuthed] = useState(isAuthenticated());
 
-  useEffect(() => { setAuthed(isAuthenticated()); }, []);
+  // Handle OAuth callback: detect ?code= in URL on page load
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    if (code) {
+      // Remove code from URL to prevent re-use on refresh
+      window.history.replaceState({}, '', window.location.pathname);
+      // Exchange code for token via server-side function
+      fetch('/api/google-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          redirect_uri: window.location.origin,
+        }),
+      })
+        .then(res => { if (!res.ok) throw new Error('Token exchange failed'); return res.json(); })
+        .then(data => { saveToken(data.access_token, data.expires_in ?? 3600); setAuthed(true); })
+        .catch(err => console.error('Google token exchange failed', err));
+    } else {
+      setAuthed(isAuthenticated());
+    }
+  }, []);
 
-  const login = useGoogleLogin({
-    flow: 'auth-code',
-    ux_mode: 'redirect',
-    redirect_uri: window.location.origin,
-    scope: SCOPES,
-    onSuccess: async (codeResponse) => {
-      try {
-        const res = await fetch('/api/google-token', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            code: codeResponse.code,
-            redirect_uri: window.location.origin,
-          }),
-        });
-        if (!res.ok) throw new Error('Token exchange failed');
-        const data = await res.json();
-        saveToken(data.access_token, data.expires_in ?? 3600);
-        setAuthed(true);
-      } catch (err) {
-        console.error('Google token exchange failed', err);
-      }
-    },
-    onError: (err) => console.error('Google login failed', err),
-  });
+  function login() {
+    // Manual OAuth redirect — no library needed
+    const params = new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      redirect_uri: window.location.origin,
+      response_type: 'code',
+      scope: SCOPES,
+      access_type: 'offline',
+      prompt: 'consent',
+    });
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+  }
 
   function handleLogout() {
     clearToken();
@@ -196,9 +204,5 @@ function GoogleIcon() {
 }
 
 export default function Dashboard() {
-  return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <DashboardInner />
-    </GoogleOAuthProvider>
-  );
+  return <DashboardInner />;
 }
