@@ -6,24 +6,32 @@ const LINKS = [
     label: 'YouTube',
     bg: '#FF0000',
     icon: 'https://cdn.simpleicons.org/youtube/ffffff',
+    svgIcon: null,
   },
   {
     href: 'https://claude.ai',
     label: 'Claude',
     bg: '#D97757',
     icon: 'https://cdn.simpleicons.org/anthropic/ffffff',
+    svgIcon: null,
   },
   {
     href: 'https://gemini.google.com',
     label: 'Gemini',
     bg: '#1A73E8',
-    icon: 'https://cdn.simpleicons.org/googlegemini/ffffff',
+    icon: null,
+    svgIcon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C12 7.52 7.52 12 2 12C7.52 12 12 16.48 12 22C12 16.48 16.48 12 22 12C16.48 12 12 7.52 12 2Z"/>
+      </svg>
+    ),
   },
   {
     href: 'https://web.whatsapp.com',
     label: 'WhatsApp',
     bg: '#25D366',
     icon: 'https://cdn.simpleicons.org/whatsapp/ffffff',
+    svgIcon: null,
   },
 ];
 
@@ -32,7 +40,7 @@ export default function QuickLaunch() {
 
   return (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      {LINKS.map(({ href, label, bg, icon }) => (
+      {LINKS.map(({ href, label, bg, icon, svgIcon }) => (
         <a
           key={label}
           href={href}
@@ -53,13 +61,9 @@ export default function QuickLaunch() {
               : '0 2px 6px rgba(0,0,0,0.12)',
           }}
         >
-          <img
-            src={icon}
-            width={20}
-            height={20}
-            alt={label}
-            style={{ display: 'block' }}
-          />
+          {svgIcon ?? (
+            <img src={icon!} width={20} height={20} alt={label} style={{ display: 'block' }} />
+          )}
         </a>
       ))}
     </div>
