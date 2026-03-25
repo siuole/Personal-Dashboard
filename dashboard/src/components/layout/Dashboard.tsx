@@ -24,10 +24,27 @@ function DashboardInner() {
   useEffect(() => { setAuthed(isAuthenticated()); }, []);
 
   const login = useGoogleLogin({
+    flow: 'auth-code',
+    ux_mode: 'redirect',
+    redirect_uri: window.location.origin,
     scope: SCOPES,
-    onSuccess: (response) => {
-      saveToken(response.access_token, response.expires_in ?? 3600);
-      setAuthed(true);
+    onSuccess: async (codeResponse) => {
+      try {
+        const res = await fetch('/api/google-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code: codeResponse.code,
+            redirect_uri: window.location.origin,
+          }),
+        });
+        if (!res.ok) throw new Error('Token exchange failed');
+        const data = await res.json();
+        saveToken(data.access_token, data.expires_in ?? 3600);
+        setAuthed(true);
+      } catch (err) {
+        console.error('Google token exchange failed', err);
+      }
     },
     onError: (err) => console.error('Google login failed', err),
   });
