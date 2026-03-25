@@ -7,12 +7,6 @@ function getGreeting(hour: number): string {
   return 'Guten Abend';
 }
 
-function getGreetingEmoji(hour: number): string {
-  if (hour < 5)  return '🌙';
-  if (hour < 12) return '☀️';
-  if (hour < 18) return '👋';
-  return '🌆';
-}
 
 function formatTime(date: Date): string {
   return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -73,7 +67,6 @@ export default function GreetingWidget() {
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
           {getGreeting(now.getHours())}, Louis
-          <span style={{ fontSize: 28 }}>{getGreetingEmoji(now.getHours())}</span>
         </h1>
         <p style={{ fontSize: 13, color: '#9CA3AF', marginTop: 3, fontWeight: 400 }}>
           {formatDate(now)}

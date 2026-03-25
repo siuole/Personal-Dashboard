@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchCurrentWeather } from '../../services/weather-api';
-import type { CurrentWeather } from '../../services/weather-api';
+import { fetchCurrentWeather, fetchForecast } from '../../services/weather-api';
+import type { CurrentWeather, ForecastDay } from '../../services/weather-api';
 import ErrorState from '../layout/ErrorState';
 
 function getWeatherCategory(id: number): 'clear' | 'cloudy' | 'rain' | 'snow' | 'storm' | 'mist' {
@@ -168,15 +168,57 @@ function RainIcon() {
   );
 }
 
+function ForecastSection({ forecast }: { forecast: ForecastDay[] }) {
+  const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+  return (
+    <div style={{
+      flex: '0 0 auto',
+      background: 'linear-gradient(145deg, #1e3a5f 0%, #152a45 100%)',
+      padding: '12px 20px',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+    }}>
+      {forecast.map((day) => {
+        const date = new Date(day.date + 'T12:00:00');
+        const name = dayNames[date.getDay()];
+        const cat = getWeatherCategory(day.conditionId);
+        const dotColor =
+          cat === 'clear' ? '#FFD040' :
+          cat === 'rain' || cat === 'storm' ? '#7EC8E3' :
+          cat === 'snow' ? '#C8E6F5' : '#A0C4E8';
+        return (
+          <div key={day.date} style={{
+            flex: 1, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', gap: 4,
+          }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.45)', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+              {name}
+            </span>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, opacity: 0.85 }} />
+            <div style={{ display: 'flex', gap: 4, alignItems: 'baseline' }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{day.tempMax}°</span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{day.tempMin}°</span>
+            </div>
+            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'capitalize', textAlign: 'center', lineHeight: 1.2 }}>
+              {day.description}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function WeatherWidget() {
   const [weather, setWeather] = useState<CurrentWeather | null>(null);
+  const [forecast, setForecast] = useState<ForecastDay[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
     try {
-      const current = await fetchCurrentWeather();
+      const [current, days] = await Promise.all([fetchCurrentWeather(), fetchForecast()]);
       setWeather(current);
+      setForecast(days);
     } catch {
       setError('Wetterdaten nicht verfügbar');
     }
@@ -206,9 +248,6 @@ export default function WeatherWidget() {
 
   const category = getWeatherCategory(weather.conditionId);
 
-  // Night temp estimate: ~4–7° cooler
-  const nightTemp = weather.temp - 5;
-
   return (
     <div style={{
       height: '100%', borderRadius: 16, overflow: 'hidden',
@@ -223,7 +262,6 @@ export default function WeatherWidget() {
         display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         position: 'relative', overflow: 'hidden',
       }}>
-        {/* Decorative background circle */}
         <div style={{
           position: 'absolute', top: -40, right: -40,
           width: 160, height: 160, borderRadius: '50%',
@@ -231,33 +269,21 @@ export default function WeatherWidget() {
           pointerEvents: 'none',
         }} />
 
-        {/* Top: temp + icon */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <div>
-            <div style={{
-              fontSize: 54, fontWeight: 700, color: '#fff',
-              lineHeight: 1, letterSpacing: -2,
-            }}>
+            <div style={{ fontSize: 54, fontWeight: 700, color: '#fff', lineHeight: 1, letterSpacing: -2 }}>
               {weather.temp}°
             </div>
-            <div style={{
-              fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)',
-              marginTop: 4, letterSpacing: 0.5,
-            }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.75)', marginTop: 4, letterSpacing: 0.5 }}>
               {weather.cityName}
             </div>
-            <div style={{
-              fontSize: 12, color: 'rgba(255,255,255,0.6)',
-              marginTop: 2, textTransform: 'capitalize',
-            }}>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 2, textTransform: 'capitalize' }}>
               {weather.description}
             </div>
           </div>
-
           <DayIcon category={category} />
         </div>
 
-        {/* Bottom: stat pills */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 12 }}>
           <StatPill icon={<WindIcon />} value={`${weather.windSpeed} km/h`} />
           <StatPill icon={<DropIcon />} value={`${weather.humidity}%`} />
@@ -265,45 +291,8 @@ export default function WeatherWidget() {
         </div>
       </div>
 
-      {/* ── NIGHT SECTION ── */}
-      <div style={{
-        flex: '0 0 auto',
-        background: 'linear-gradient(145deg, #1A1A2E 0%, #0F0F1A 100%)',
-        padding: '14px 20px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <div>
-          <div style={{
-            fontSize: 11, color: 'rgba(255,255,255,0.4)',
-            fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 2,
-          }}>
-            Nacht
-          </div>
-          <div style={{
-            fontSize: 28, fontWeight: 600, color: 'rgba(255,255,255,0.85)',
-            lineHeight: 1, letterSpacing: -1,
-          }}>
-            {nightTemp}°
-          </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>
-            Klarer Himmel
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {/* Stars */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, opacity: 0.6 }}>
-            {[3, 2, 4].map((size, i) => (
-              <div key={i} style={{
-                width: size, height: size, borderRadius: '50%',
-                background: '#fff',
-                marginLeft: i === 1 ? 8 : i === 2 ? 2 : 0,
-              }} />
-            ))}
-          </div>
-          <MoonIcon />
-        </div>
-      </div>
+      {/* ── FORECAST SECTION ── */}
+      {forecast.length > 0 && <ForecastSection forecast={forecast} />}
     </div>
   );
 }
