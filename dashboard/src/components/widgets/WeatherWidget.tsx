@@ -105,30 +105,6 @@ function DayIcon({ category }: { category: ReturnType<typeof getWeatherCategory>
   );
 }
 
-// CSS moon icon — gradient sphere with shine
-function MoonIcon() {
-  return (
-    <div style={{
-      width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-      background: 'radial-gradient(circle at 35% 35%, #E8E0C8, #C8B878 50%, #8B7A40)',
-      boxShadow: 'inset -4px -4px 8px rgba(0,0,0,0.4), inset 2px 2px 6px rgba(255,255,200,0.3), 0 0 16px rgba(200,180,80,0.25)',
-      position: 'relative', overflow: 'hidden',
-    }}>
-      {/* shine highlight */}
-      <div style={{
-        position: 'absolute', top: 6, left: 8, width: 12, height: 8, borderRadius: '50%',
-        background: 'rgba(255,255,220,0.45)',
-        transform: 'rotate(-20deg)',
-      }} />
-      {/* crater */}
-      <div style={{
-        position: 'absolute', bottom: 10, right: 9, width: 8, height: 8, borderRadius: '50%',
-        background: 'rgba(0,0,0,0.12)',
-        boxShadow: 'inset 1px 1px 3px rgba(0,0,0,0.2)',
-      }} />
-    </div>
-  );
-}
 
 function StatPill({ icon, value }: { icon: React.ReactNode; value: string }) {
   return (
