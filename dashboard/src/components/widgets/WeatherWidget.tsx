@@ -168,39 +168,55 @@ function RainIcon() {
   );
 }
 
+function forecastEmoji(cat: ReturnType<typeof getWeatherCategory>): string {
+  if (cat === 'clear') return '☀️';
+  if (cat === 'rain') return '🌧️';
+  if (cat === 'storm') return '⛈️';
+  if (cat === 'snow') return '❄️';
+  if (cat === 'mist') return '🌫️';
+  return '⛅';
+}
+
 function ForecastSection({ forecast }: { forecast: ForecastDay[] }) {
   const dayNames = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+  const todayIdx = new Date().getDay();
+
   return (
     <div style={{
       flex: '0 0 auto',
       background: 'linear-gradient(145deg, #1e3a5f 0%, #152a45 100%)',
-      padding: '12px 20px',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+      padding: '10px 16px',
+      display: 'flex', alignItems: 'stretch',
     }}>
-      {forecast.map((day) => {
+      {forecast.map((day, i) => {
         const date = new Date(day.date + 'T12:00:00');
-        const name = dayNames[date.getDay()];
+        const isToday = date.getDay() === todayIdx && i === 0;
+        const name = isToday ? 'Heute' : dayNames[date.getDay()];
         const cat = getWeatherCategory(day.conditionId);
-        const dotColor =
-          cat === 'clear' ? '#FFD040' :
-          cat === 'rain' || cat === 'storm' ? '#7EC8E3' :
-          cat === 'snow' ? '#C8E6F5' : '#A0C4E8';
+
         return (
           <div key={day.date} style={{
-            flex: 1, display: 'flex', flexDirection: 'column',
-            alignItems: 'center', gap: 4,
+            flex: 1,
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            gap: 5, padding: '4px 0',
+            borderRight: i < forecast.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
           }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.45)', letterSpacing: 0.8, textTransform: 'uppercase' }}>
+            <span style={{
+              fontSize: 10, fontWeight: 600,
+              color: isToday ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.4)',
+              letterSpacing: 0.5,
+            }}>
               {name}
             </span>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, opacity: 0.85 }} />
-            <div style={{ display: 'flex', gap: 4, alignItems: 'baseline' }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{day.tempMax}°</span>
-              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{day.tempMin}°</span>
+            <span style={{ fontSize: 20, lineHeight: 1 }}>{forecastEmoji(cat)}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
+                {day.tempMax}°
+              </span>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                {day.tempMin}°
+              </span>
             </div>
-            <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', textTransform: 'capitalize', textAlign: 'center', lineHeight: 1.2 }}>
-              {day.description}
-            </span>
           </div>
         );
       })}

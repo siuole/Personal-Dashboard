@@ -78,11 +78,8 @@ export async function fetchForecast(): Promise<ForecastDay[]> {
     byDay[day].push(entry);
   }
 
-  const today = new Date().toISOString().split('T')[0];
-
   return Object.entries(byDay)
-    .filter(([day]) => day !== today)
-    .slice(0, 3)
+    .slice(0, 5)
     .map(([day, entries]) => {
       const midday = entries.find((e) => e.dt_txt.includes('12:00')) ?? entries[Math.floor(entries.length / 2)];
       const temps = entries.map((e) => e.main.temp);
