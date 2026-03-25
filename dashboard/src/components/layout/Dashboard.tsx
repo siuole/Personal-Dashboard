@@ -66,72 +66,73 @@ function DashboardInner() {
   return (
     <div className="min-h-screen flex flex-col gap-5" style={{ padding: '24px 28px' }}>
 
-      {/* Header */}
-      <WidgetCard className="w-full">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <GreetingWidget />
-          </div>
-          <div className="flex-shrink-0 flex items-center gap-4">
-            <QuickLaunch />
-            {authed ? (
-              <button
-                onClick={handleLogout}
-                style={{
-                  fontSize: 12, fontWeight: 500, color: '#9CA3AF',
-                  background: 'transparent', border: 'none',
-                  padding: '6px 12px', borderRadius: 10,
-                  cursor: 'pointer', fontFamily: 'inherit',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLButtonElement).style.color = '#6B7280';
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.05)';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF';
-                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                }}
-              >
-                Abmelden
-              </button>
-            ) : (
-              <button
-                onClick={() => login()}
-                className="group flex items-center gap-3 whitespace-nowrap"
-                style={{
-                  padding: '10px 20px',
-                  background: 'rgba(255,255,255,0.75)',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(255,255,255,0.7)',
-                  borderRadius: 14,
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  transition: 'all 0.2s ease',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.9)';
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.95)';
-                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.75)';
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)';
-                  (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
-                }}
-              >
-                <GoogleIcon />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#374151', letterSpacing: -0.1 }}>
-                  <span className="hidden sm:inline">Mit Google anmelden</span>
-                  <span className="sm:hidden">Anmelden</span>
-                </span>
-              </button>
-            )}
-          </div>
-        </div>
-      </WidgetCard>
+      {/* Header Row */}
+      <div className="flex gap-5">
+        {/* Greeting + Time */}
+        <WidgetCard className="flex-1 min-w-0">
+          <GreetingWidget />
+        </WidgetCard>
+
+        {/* Quick Launch + Login */}
+        <WidgetCard className="flex-shrink-0 flex flex-col items-center justify-between gap-4" style={{ minWidth: 160 }}>
+          <QuickLaunch />
+          {authed ? (
+            <button
+              onClick={handleLogout}
+              style={{
+                fontSize: 12, fontWeight: 500, color: '#9CA3AF',
+                background: 'transparent', border: 'none',
+                padding: '6px 12px', borderRadius: 10,
+                cursor: 'pointer', fontFamily: 'inherit',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.color = '#6B7280';
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.05)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF';
+                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              }}
+            >
+              Abmelden
+            </button>
+          ) : (
+            <button
+              onClick={() => login()}
+              className="group flex items-center gap-3 whitespace-nowrap"
+              style={{
+                padding: '10px 20px',
+                background: 'rgba(255,255,255,0.75)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255,255,255,0.7)',
+                borderRadius: 14,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.9)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.95)';
+                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.75)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)';
+                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+              }}
+            >
+              <GoogleIcon />
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#374151', letterSpacing: -0.1 }}>
+                <span className="hidden sm:inline">Mit Google anmelden</span>
+                <span className="sm:hidden">Anmelden</span>
+              </span>
+            </button>
+          )}
+        </WidgetCard>
+      </div>
 
       {/* Row 1: Calendar (breiter) + Gmail (schmaler) */}
       <div className="hidden lg:grid gap-5" style={{ gridTemplateColumns: '1.7fr 1fr' }}>
