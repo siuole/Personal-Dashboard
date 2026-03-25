@@ -8,6 +8,7 @@ import TasksWidget from '../widgets/TasksWidget';
 import StravaWidget from '../widgets/StravaWidget';
 import GoalsWidget from '../widgets/GoalsWidget';
 import { saveToken, isAuthenticated, clearToken } from '../../services/google-auth';
+import QuickLaunch from '../widgets/QuickLaunch';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -71,7 +72,8 @@ function DashboardInner() {
           <div className="flex-1 min-w-0">
             <GreetingWidget />
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex items-center gap-4">
+            <QuickLaunch />
             {authed ? (
               <button
                 onClick={handleLogout}
