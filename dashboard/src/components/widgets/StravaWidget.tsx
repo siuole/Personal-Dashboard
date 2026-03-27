@@ -158,21 +158,6 @@ export default function StravaWidget() {
   }, [authed, weekOffset, load]);
 
   // ── Header (always shown when authed) ──────────────────────────────────
-  const weekNav = authed && (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      <NavBtn onClick={() => setWeekOffset(o => o - 1)}>‹</NavBtn>
-      {weekOffset < 0 && (
-        <button onClick={() => setWeekOffset(0)} style={todayBtnStyle}
-          onMouseDown={e => { e.currentTarget.style.translate = '0 0.225em'; e.currentTarget.style.boxShadow = SHP; }}
-          onMouseUp={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = SH; }}
-          onMouseLeave={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = SH; }}
-        >Heute</button>
-      )}
-      <NavBtn onClick={() => setWeekOffset(o => Math.min(o + 1, 0))} disabled={weekOffset === 0}>›</NavBtn>
-      <button onClick={() => { clearStravaTokens(); setAuthed(false); setStats(null); }} style={disconnectBtnStyle}>✕</button>
-    </div>
-  );
-
   const header = (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
       <a
@@ -188,7 +173,6 @@ export default function StravaWidget() {
           {stats?.weekLabel ?? 'Strava'}
         </span>
       </a>
-      {weekNav}
     </div>
   );
 
