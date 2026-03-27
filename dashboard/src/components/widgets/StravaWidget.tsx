@@ -125,7 +125,7 @@ export default function StravaWidget() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [exchanging, setExchanging] = useState(false);
-  const [weekOffset, setWeekOffset] = useState(0);
+  const [weekOffset] = useState(0);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -298,48 +298,10 @@ function KpiTile({ label, value, accent }: { label: string; value: string; accen
   );
 }
 
-const SH = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
-const SHP = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece';
+
 const SHO = 'inset 0 0.0625em 0 0 rgba(255,255,255,0.25), 0 0.0625em 0 0 #d94002, 0 0.125em 0 0 #d03c00, 0 0.25em 0 0 #c43800, 0 0.3125em 0 0 #b83400, 0 0.375em 0 0 #ac3000, 0 0.425em 0 0 #9a2c00, 0 0.425em 0.5em 0 #9e2e00';
 const SHOP = 'inset 0 0.03em 0 0 rgba(255,255,255,0.25), 0 0.03em 0 0 #d94002, 0 0.0625em 0 0 #d03c00, 0 0.125em 0 0 #c43800, 0 0.125em 0 0 #b83400, 0 0.2em 0 0 #ac3000, 0 0.225em 0 0 #9a2c00, 0 0.225em 0.375em 0 #9e2e00';
 
-function NavBtn({ onClick, disabled, children }: { onClick: () => void; disabled?: boolean; children: React.ReactNode }) {
-  return (
-    <button onClick={onClick} disabled={disabled}
-      style={{
-        width: 24, height: 24, borderRadius: 6, border: 0, fontSize: '14px',
-        background: disabled ? 'rgba(0,0,0,0.03)' : '#f0f0f0',
-        cursor: disabled ? 'default' : 'pointer',
-        color: disabled ? '#D1D5DB' : '#6B7280',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: 'inherit', fontWeight: 700,
-        textShadow: '0 0.0625em 0 #fff',
-        boxShadow: disabled ? 'none' : SH,
-        transition: '0.15s ease',
-      }}
-      onMouseDown={e => { if (disabled) return; e.currentTarget.style.translate = '0 0.225em'; e.currentTarget.style.boxShadow = SHP; }}
-      onMouseUp={e => { e.currentTarget.style.translate = ''; if (!disabled) e.currentTarget.style.boxShadow = SH; }}
-      onMouseLeave={e => { e.currentTarget.style.translate = ''; if (!disabled) e.currentTarget.style.boxShadow = SH; }}
-    >
-      {children}
-    </button>
-  );
-}
-
-const todayBtnStyle: React.CSSProperties = {
-  fontSize: 10, fontWeight: 600, color: '#242424',
-  background: '#f0f0f0', border: 'none', borderRadius: 99,
-  padding: '0.25em 0.7em', cursor: 'pointer', fontFamily: 'inherit',
-  textShadow: '0 0.0625em 0 #fff',
-  boxShadow: SH,
-  transition: '0.15s ease',
-};
-
-const disconnectBtnStyle: React.CSSProperties = {
-  width: 20, height: 20, borderRadius: 4, border: 'none',
-  background: 'none', cursor: 'pointer', color: '#D1D5DB',
-  fontSize: 11, fontFamily: 'inherit',
-};
 
 const connectBtnStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 8,
