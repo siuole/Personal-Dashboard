@@ -163,7 +163,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
         {days.map((day) => {
           const isToday = isSameDay(day, today);
           return (
-            <div key={day.toISOString()} className="flex-1 flex flex-col items-center">
+            <div key={day.toISOString()} className="flex-1 flex flex-col items-center" style={{ borderLeft: '1px solid transparent' }}>
               <span style={{ fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase' }}>
                 {day.toLocaleDateString('de-DE', { weekday: 'short' })}
               </span>
@@ -190,7 +190,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
           {days.map((day) => {
             const dayAllDay = allDayEvents.filter((e) => isSameDay(new Date(e.start), day));
             return (
-              <div key={day.toISOString()} className="flex-1 px-0.5 flex flex-col gap-0.5">
+              <div key={day.toISOString()} className="flex-1 px-0.5 flex flex-col gap-0.5" style={{ borderLeft: '1px solid transparent' }}>
                 {dayAllDay.map((e) => {
                   const s = getEventStyle(e.colorId);
                   return (
