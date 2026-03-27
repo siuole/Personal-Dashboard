@@ -160,7 +160,9 @@ function ForecastSection({ forecast }: { forecast: ForecastDay[] }) {
   return (
     <div style={{
       flex: '0 0 auto',
-      background: 'linear-gradient(145deg, #1e3a5f 0%, #152a45 100%)',
+      background: 'rgba(0,0,0,0.15)',
+      backdropFilter: 'blur(4px)',
+      borderTop: '1px solid rgba(255,255,255,0.12)',
       padding: '10px 16px',
       display: 'flex', alignItems: 'stretch',
     }}>
@@ -244,12 +246,12 @@ export default function WeatherWidget() {
     <div style={{
       height: '100%', borderRadius: 16, overflow: 'hidden',
       display: 'flex', flexDirection: 'column',
+      background: 'linear-gradient(160deg, #4A9FE8 0%, #2D7DD2 45%, #1A5FAA 100%)',
     }}>
 
-      {/* ── DAY SECTION ── */}
+      {/* ── CURRENT WEATHER SECTION ── */}
       <div style={{
         flex: '1 1 0',
-        background: 'linear-gradient(145deg, #4A9FE8 0%, #2D7DD2 60%, #1A5FAA 100%)',
         padding: '20px 20px 16px',
         display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
         position: 'relative', overflow: 'hidden',

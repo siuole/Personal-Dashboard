@@ -102,30 +102,34 @@ function DashboardInner() {
               onClick={() => login()}
               className="group flex items-center gap-3 whitespace-nowrap"
               style={{
-                padding: '10px 20px',
-                background: 'rgba(255,255,255,0.75)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                border: '1px solid rgba(255,255,255,0.7)',
-                borderRadius: 14,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)',
-                cursor: 'pointer',
+                padding: '0.375em 1em',
+                background: '#f0f0f0',
+                border: 0,
+                borderRadius: '0.5em',
+                fontSize: '1rem',
+                fontWeight: 600,
+                color: '#242424',
                 fontFamily: 'inherit',
-                transition: 'all 0.2s ease',
+                cursor: 'pointer',
+                textShadow: '0 0.0625em 0 #fff',
+                boxShadow: 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece',
+                transition: '0.15s ease',
               }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.9)';
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 24px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.95)';
-                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+              onMouseDown={e => {
+                e.currentTarget.style.translate = '0 0.225em';
+                e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece';
+              }}
+              onMouseUp={e => {
+                e.currentTarget.style.translate = '';
+                e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.75)';
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.9)';
-                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(0)';
+                e.currentTarget.style.translate = '';
+                e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
               }}
             >
               <GoogleIcon />
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#374151', letterSpacing: -0.1 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: -0.1 }}>
                 <span className="hidden sm:inline">Mit Google anmelden</span>
                 <span className="sm:hidden">Anmelden</span>
               </span>
