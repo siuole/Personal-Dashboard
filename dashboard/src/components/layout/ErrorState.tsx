@@ -14,7 +14,20 @@ export default function ErrorState({ message, onRetry }: ErrorStateProps) {
       {onRetry && (
         <button
           onClick={onRetry}
-          className="text-xs text-blue-400 hover:text-blue-600 transition-colors mt-1 underline underline-offset-2"
+          style={{
+            marginTop: 4, padding: '0.3em 0.9em', fontSize: '0.75rem', fontWeight: 600,
+            color: '#242424', background: '#f0f0f0', border: 0, borderRadius: '0.5em',
+            cursor: 'pointer', fontFamily: 'inherit',
+            textShadow: '0 0.0625em 0 #fff',
+            boxShadow: 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece',
+            transition: '0.15s ease',
+          }}
+          onMouseDown={e => {
+            e.currentTarget.style.translate = '0 0.225em';
+            e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece';
+          }}
+          onMouseUp={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'; }}
+          onMouseLeave={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'; }}
         >
           Erneut versuchen
         </button>

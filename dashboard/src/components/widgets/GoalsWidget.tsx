@@ -180,21 +180,47 @@ export default function GoalsWidget({ period }: { period: Period }) {
             <button
               onClick={() => toggleGoal(goal.id)}
               style={{
-                width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
-                border: `2px solid ${goal.done ? '#6366F1' : 'rgba(99,102,241,0.3)'}`,
-                background: goal.done ? '#6366F1' : 'rgba(255,255,255,0.6)',
+                width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                border: 0, fontSize: '14px',
+                background: goal.done ? '#6366F1' : '#f0f0f0',
                 cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.2s ease', outline: 'none',
-                boxShadow: goal.done ? '0 0 8px rgba(99,102,241,0.35)' : 'none',
+                textShadow: '0 0.0625em 0 #fff',
+                boxShadow: goal.done
+                  ? 'inset 0 0.0625em 0 0 rgba(255,255,255,0.3), 0 0.0625em 0 0 #4f52d4, 0 0.125em 0 0 #4a4dcc, 0 0.25em 0 0 #4446c0, 0 0.3125em 0 0 #4042b8, 0 0.375em 0 0 #3b3db0, 0 0.425em 0 0 #3234a0, 0 0.425em 0.5em 0 #3436a8'
+                  : 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece',
+                transition: '0.15s ease', outline: 'none',
               }}
+              onMouseEnter={e => {
+                if (!goal.done) {
+                  e.currentTarget.style.background = '#6366F1';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 rgba(255,255,255,0.3), 0 0.0625em 0 0 #4f52d4, 0 0.125em 0 0 #4a4dcc, 0 0.25em 0 0 #4446c0, 0 0.3125em 0 0 #4042b8, 0 0.375em 0 0 #3b3db0, 0 0.425em 0 0 #3234a0, 0 0.425em 0.5em 0 #3436a8';
+                  const svg = e.currentTarget.querySelector('svg') as SVGElement | null;
+                  if (svg) svg.style.opacity = '1';
+                }
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.translate = '';
+                if (!goal.done) {
+                  e.currentTarget.style.background = '#f0f0f0';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
+                  const svg = e.currentTarget.querySelector('svg') as SVGElement | null;
+                  if (svg) svg.style.opacity = '0';
+                }
+              }}
+              onMouseDown={e => {
+                e.currentTarget.style.translate = '0 0.225em';
+                e.currentTarget.style.boxShadow = goal.done
+                  ? 'inset 0 0.03em 0 0 rgba(255,255,255,0.3), 0 0.03em 0 0 #4f52d4, 0 0.0625em 0 0 #4a4dcc, 0 0.125em 0 0 #4446c0, 0 0.125em 0 0 #4042b8, 0 0.2em 0 0 #3b3db0, 0 0.225em 0 0 #3234a0, 0 0.225em 0.375em 0 #3436a8'
+                  : 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece';
+              }}
+              onMouseUp={e => { e.currentTarget.style.translate = ''; }}
               aria-label="Ziel abhaken"
             >
-              {goal.done && (
-                <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-                  <polyline points="2,6 5,9 10,3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              )}
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none"
+                style={{ opacity: goal.done ? 1 : 0, transition: 'opacity 0.1s ease', pointerEvents: 'none' }}>
+                <polyline points="2,6 5,9 10,3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
             <span style={{
               flex: 1, fontSize: 13,
@@ -254,15 +280,25 @@ export default function GoalsWidget({ period }: { period: Period }) {
           onClick={addGoal}
           disabled={!inputVal.trim()}
           style={{
-            padding: '6px 14px', fontSize: 14, fontWeight: 600,
-            color: inputVal.trim() ? 'white' : 'rgba(0,0,0,0.2)',
-            background: inputVal.trim() ? '#6366F1' : 'rgba(0,0,0,0.06)',
-            border: 'none', borderRadius: 10,
+            padding: '0.375em 0.8em', fontSize: '14px', fontWeight: 600,
+            color: inputVal.trim() ? '#242424' : 'rgba(0,0,0,0.2)',
+            background: inputVal.trim() ? '#f0f0f0' : 'rgba(0,0,0,0.04)',
+            border: 0, borderRadius: '0.5em',
             cursor: inputVal.trim() ? 'pointer' : 'default',
             fontFamily: 'inherit',
-            transition: 'all 0.2s ease',
-            boxShadow: inputVal.trim() ? '0 2px 8px rgba(99,102,241,0.35)' : 'none',
+            textShadow: inputVal.trim() ? '0 0.0625em 0 #fff' : 'none',
+            boxShadow: inputVal.trim()
+              ? 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'
+              : 'none',
+            transition: '0.15s ease',
           }}
+          onMouseDown={e => {
+            if (!inputVal.trim()) return;
+            e.currentTarget.style.translate = '0 0.225em';
+            e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece';
+          }}
+          onMouseUp={e => { e.currentTarget.style.translate = ''; if (inputVal.trim()) e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'; }}
+          onMouseLeave={e => { e.currentTarget.style.translate = ''; if (inputVal.trim()) e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'; }}
         >
           +
         </button>
