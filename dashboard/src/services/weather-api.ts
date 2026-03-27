@@ -32,18 +32,36 @@ async function getCoords(): Promise<{ lat: number; lon: number }> {
     if (Date.now() - ts < GEO_CACHE_TTL) return { lat, lon };
   }
 
-  return new Promise((resolve) => {
+  // 1. Try browser geolocation
+  const browserCoords = await new Promise<{ lat: number; lon: number } | null>((resolve) => {
+    if (!navigator.geolocation) { resolve(null); return; }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ lat, lon, ts: Date.now() }));
-        resolve({ lat, lon });
-      },
-      () => resolve({ lat: Number(FALLBACK_LAT), lon: Number(FALLBACK_LON) }),
-      { timeout: 8000 }
+      (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      () => resolve(null),
+      { timeout: 6000 }
     );
   });
+
+  if (browserCoords) {
+    localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ ...browserCoords, ts: Date.now() }));
+    return browserCoords;
+  }
+
+  // 2. Fallback: IP-based geolocation (no key needed)
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.latitude && data.longitude) {
+        const coords = { lat: data.latitude, lon: data.longitude };
+        localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ ...coords, ts: Date.now() }));
+        return coords;
+      }
+    }
+  } catch { /* ignore */ }
+
+  // 3. Last resort: env var fallback
+  return { lat: Number(FALLBACK_LAT), lon: Number(FALLBACK_LON) };
 }
 
 export async function fetchCurrentWeather(): Promise<CurrentWeather> {
