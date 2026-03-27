@@ -133,20 +133,33 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
                   transition: '0.15s ease',
                   outline: 'none',
                 }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#6366F1';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 rgba(255,255,255,0.3), 0 0.0625em 0 0 #4f52d4, 0 0.125em 0 0 #4a4dcc, 0 0.25em 0 0 #4446c0, 0 0.3125em 0 0 #4042b8, 0 0.375em 0 0 #3b3db0, 0 0.425em 0 0 #3234a0, 0 0.425em 0.5em 0 #3436a8';
+                  const svg = e.currentTarget.querySelector('svg') as SVGElement | null;
+                  if (svg) svg.style.opacity = '1';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = '#f0f0f0';
+                  e.currentTarget.style.translate = '';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
+                  const svg = e.currentTarget.querySelector('svg') as SVGElement | null;
+                  if (svg) svg.style.opacity = '0';
+                }}
                 onMouseDown={e => {
                   e.currentTarget.style.translate = '0 0.225em';
-                  e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 rgba(255,255,255,0.3), 0 0.03em 0 0 #4f52d4, 0 0.0625em 0 0 #4a4dcc, 0 0.125em 0 0 #4446c0, 0 0.125em 0 0 #4042b8, 0 0.2em 0 0 #3b3db0, 0 0.225em 0 0 #3234a0, 0 0.225em 0.375em 0 #3436a8';
                 }}
                 onMouseUp={e => {
                   e.currentTarget.style.translate = '';
-                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.translate = '';
-                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
                 }}
                 aria-label="Als erledigt markieren"
-              />
+              >
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"
+                  style={{ opacity: 0, transition: 'opacity 0.1s ease', pointerEvents: 'none' }}>
+                  <polyline points="2,6 5,9 10,3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: 13, color: '#374151', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {task.title}
