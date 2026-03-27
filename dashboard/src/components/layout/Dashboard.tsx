@@ -80,19 +80,30 @@ function DashboardInner() {
             <button
               onClick={handleLogout}
               style={{
-                fontSize: 12, fontWeight: 500, color: '#9CA3AF',
-                background: 'transparent', border: 'none',
-                padding: '6px 12px', borderRadius: 10,
-                cursor: 'pointer', fontFamily: 'inherit',
-                transition: 'all 0.15s ease',
+                padding: '0.375em 1em',
+                background: '#f0f0f0',
+                border: 0,
+                borderRadius: '0.5em',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: '#242424',
+                fontFamily: 'inherit',
+                cursor: 'pointer',
+                textShadow: '0 0.0625em 0 #fff',
+                boxShadow: 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece',
+                transition: '0.15s ease',
               }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.color = '#6B7280';
-                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,0,0,0.05)';
+              onMouseDown={e => {
+                e.currentTarget.style.translate = '0 0.225em';
+                e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece';
+              }}
+              onMouseUp={e => {
+                e.currentTarget.style.translate = '';
+                e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
               }}
               onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.color = '#9CA3AF';
-                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                e.currentTarget.style.translate = '';
+                e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
               }}
             >
               Abmelden
