@@ -122,22 +122,28 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
                 onClick={() => handleComplete(task.id)}
                 disabled={isCompleting}
                 style={{
-                  width: 20, height: 20, borderRadius: '50%',
-                  border: '2px solid rgba(99,102,241,0.35)',
-                  background: 'rgba(255,255,255,0.6)',
-                  backdropFilter: 'blur(4px)',
+                  width: 22, height: 22, borderRadius: '50%',
+                  border: 0,
+                  background: '#f0f0f0',
                   flexShrink: 0, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s ease',
+                  fontSize: '14px',
+                  textShadow: '0 0.0625em 0 #fff',
+                  boxShadow: 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece',
+                  transition: '0.15s ease',
                   outline: 'none',
                 }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = '#6366F1';
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(99,102,241,0.1)';
+                onMouseDown={e => {
+                  e.currentTarget.style.translate = '0 0.225em';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece';
+                }}
+                onMouseUp={e => {
+                  e.currentTarget.style.translate = '';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
                 }}
                 onMouseLeave={e => {
-                  (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(99,102,241,0.35)';
-                  (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.6)';
+                  e.currentTarget.style.translate = '';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
                 }}
                 aria-label="Als erledigt markieren"
               />
