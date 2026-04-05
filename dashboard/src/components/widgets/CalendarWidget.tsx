@@ -9,23 +9,29 @@ const DAY_START = 7;
 const DAY_END = 22;
 const TOTAL_HOURS = DAY_END - DAY_START;
 
-// Pastel translucent event colors – look great on dark glass cards
-const EVENT_STYLES: Record<string, { bg: string; border: string }> = {
-  '1':  { bg: 'rgba(96,165,250,0.55)',  border: '#60A5FA' },
-  '2':  { bg: 'rgba(74,222,128,0.55)',  border: '#4ADE80' },
-  '3':  { bg: 'rgba(167,139,250,0.55)', border: '#A78BFA' },
-  '4':  { bg: 'rgba(248,113,113,0.55)', border: '#F87171' },
-  '5':  { bg: 'rgba(250,204,21,0.55)',  border: '#FACC15' },
-  '6':  { bg: 'rgba(251,146,60,0.55)',  border: '#FB923C' },
-  '7':  { bg: 'rgba(45,212,191,0.55)',  border: '#2DD4BF' },
-  '9':  { bg: 'rgba(99,102,241,0.65)',  border: '#6366F1' },
-  '10': { bg: 'rgba(34,197,94,0.65)',   border: '#22C55E' },
-  '11': { bg: 'rgba(239,68,68,0.65)',   border: '#EF4444' },
+// Event colors for light glass cards
+const EVENT_STYLES: Record<string, { bg: string; border: string; text: string }> = {
+  '1':  { bg: 'rgba(59,130,246,0.14)',  border: '#3B82F6', text: '#1e40af' },
+  '2':  { bg: 'rgba(34,197,94,0.14)',   border: '#22C55E', text: '#166534' },
+  '3':  { bg: 'rgba(139,92,246,0.14)',  border: '#8B5CF6', text: '#5b21b6' },
+  '4':  { bg: 'rgba(239,68,68,0.14)',   border: '#EF4444', text: '#991b1b' },
+  '5':  { bg: 'rgba(234,179,8,0.14)',   border: '#CA8A04', text: '#78350f' },
+  '6':  { bg: 'rgba(249,115,22,0.14)',  border: '#F97316', text: '#9a3412' },
+  '7':  { bg: 'rgba(20,184,166,0.14)',  border: '#14B8A6', text: '#134e4a' },
+  '9':  { bg: 'rgba(99,102,241,0.14)',  border: '#6366F1', text: '#3730a3' },
+  '10': { bg: 'rgba(34,197,94,0.14)',   border: '#22C55E', text: '#166534' },
+  '11': { bg: 'rgba(239,68,68,0.14)',   border: '#EF4444', text: '#991b1b' },
 };
-const DEFAULT_EVENT_STYLE = { bg: 'rgba(99,102,241,0.55)', border: '#6366F1' };
+const DEFAULT_EVENT_STYLE = { bg: 'rgba(99,102,241,0.14)', border: '#6366F1', text: '#3730a3' };
 
 function getEventStyle(colorId?: string) {
   return EVENT_STYLES[colorId ?? ''] ?? DEFAULT_EVENT_STYLE;
+}
+
+function isPastDay(day: Date): boolean {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return day < today;
 }
 
 function getWeekDays(): Date[] {
@@ -162,16 +168,19 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
       <div className="flex pl-10 mb-1 flex-shrink-0">
         {days.map((day) => {
           const isToday = isSameDay(day, today);
+          const isPast = isPastDay(day);
           return (
             <div key={day.toISOString()} className="flex-1 flex flex-col items-center" style={{ borderLeft: '1px solid transparent' }}>
-              <span style={{ fontSize: 10, color: '#6B7280', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: 10, color: isPast ? '#9CA3AF' : '#6B7280', textTransform: 'uppercase' }}>
                 {day.toLocaleDateString('de-DE', { weekday: 'short' })}
               </span>
               <span
                 className="text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full mt-0.5"
                 style={isToday
                   ? { background: '#6366F1', color: 'white' }
-                  : { color: '#E5E7EB' }
+                  : isPast
+                    ? { color: '#9CA3AF' }
+                    : { color: '#374151' }
                 }
               >
                 {day.getDate()}
@@ -185,9 +194,10 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
       {allDayEvents.length > 0 && (
         <div
           className="flex pl-10 mb-1 flex-shrink-0 pb-1"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}
         >
           {days.map((day) => {
+            const isPast = isPastDay(day);
             const dayAllDay = allDayEvents.filter((e) => isSameDay(new Date(e.start), day));
             return (
               <div key={day.toISOString()} className="flex-1 px-0.5 flex flex-col gap-0.5" style={{ borderLeft: '1px solid transparent' }}>
@@ -196,8 +206,8 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
                   return (
                     <div
                       key={e.id}
-                      className="truncate text-white text-[10px] font-medium px-1 py-0.5"
-                      style={{ borderRadius: 6, background: s.bg }}
+                      className="truncate text-[10px] font-medium px-1 py-0.5"
+                      style={{ borderRadius: 6, background: s.bg, color: s.text, opacity: isPast ? 0.55 : 1 }}
                       title={e.summary}
                     >
                       {e.summary}
@@ -230,6 +240,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
           {/* Day columns */}
           {days.map((day) => {
             const isToday = isSameDay(day, today);
+            const isPast = isPastDay(day);
             const dayEvents = timedEvents.filter((e) => isSameDay(new Date(e.start), day));
 
             return (
@@ -237,8 +248,8 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
                 key={day.toISOString()}
                 className="flex-1 relative"
                 style={{
-                  borderLeft: '1px solid rgba(255,255,255,0.06)',
-                  background: isToday ? 'rgba(99,102,241,0.08)' : 'transparent',
+                  borderLeft: '1px solid rgba(0,0,0,0.07)',
+                  background: isToday ? 'rgba(99,102,241,0.05)' : 'transparent',
                 }}
               >
                 {/* Hour lines */}
@@ -246,7 +257,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
                   <div
                     key={i}
                     className="absolute left-0 right-0"
-                    style={{ top: `${(i / TOTAL_HOURS) * 100}%`, borderTop: '1px solid rgba(255,255,255,0.04)' }}
+                    style={{ top: `${(i / TOTAL_HOURS) * 100}%`, borderTop: '1px solid rgba(0,0,0,0.05)' }}
                   />
                 ))}
 
@@ -260,7 +271,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
                   return (
                     <div
                       key={e.id}
-                      className="absolute text-white text-[10px] leading-tight overflow-hidden z-10"
+                      className="absolute text-[10px] leading-tight overflow-hidden z-10"
                       style={{
                         top: `${top}%`, height: `${height}%`,
                         left: 2, right: 2,
@@ -268,13 +279,14 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
                         background: s.bg,
                         borderLeft: `2px solid ${s.border}`,
                         padding: '2px 4px',
-                        backdropFilter: 'blur(4px)',
+                        color: s.text,
+                        opacity: isPast ? 0.55 : 1,
                       }}
                       title={`${e.summary} • ${formatShort(e.start)}–${formatShort(e.end)}`}
                     >
                       <span className="font-medium block truncate">{e.summary}</span>
                       {height > 4 && (
-                        <span style={{ opacity: 0.85 }}>{formatShort(e.start)}</span>
+                        <span style={{ opacity: 0.75 }}>{formatShort(e.start)}</span>
                       )}
                     </div>
                   );
