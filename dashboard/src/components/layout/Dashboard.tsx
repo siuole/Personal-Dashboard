@@ -21,6 +21,38 @@ const SCOPES = [
 function DashboardInner() {
   const [authed, setAuthed] = useState(isAuthenticated());
 
+  // Dynamic background based on time of day
+  useEffect(() => {
+    function applyBackground() {
+      const h = new Date().getHours();
+      let bg: string;
+      if (h >= 5 && h < 8) {
+        // Dawn — warm peach/gold
+        bg = 'linear-gradient(160deg, #fdf1e0 0%, #fce4c4 100%)';
+      } else if (h >= 8 && h < 12) {
+        // Morning — fresh cool blue-white
+        bg = 'linear-gradient(160deg, #eef5ff 0%, #e6f0fa 100%)';
+      } else if (h >= 12 && h < 17) {
+        // Afternoon — clean neutral (default)
+        bg = 'linear-gradient(160deg, #f5f5f7 0%, #ebebed 100%)';
+      } else if (h >= 17 && h < 20) {
+        // Evening — warm amber
+        bg = 'linear-gradient(160deg, #fff4e6 0%, #ffe8cc 100%)';
+      } else if (h >= 20 && h < 22) {
+        // Dusk — soft lavender
+        bg = 'linear-gradient(160deg, #f0ebf8 0%, #e2d9f3 100%)';
+      } else {
+        // Night — cool blue-gray
+        bg = 'linear-gradient(160deg, #e4e8f4 0%, #d5dbed 100%)';
+      }
+      document.body.style.background = bg;
+    }
+
+    applyBackground();
+    const timer = setInterval(applyBackground, 60 * 1000);
+    return () => { clearInterval(timer); document.body.style.background = ''; };
+  }, []);
+
   // Auto-refresh: on startup and every 55 minutes
   useEffect(() => {
     async function tryRefresh() {
