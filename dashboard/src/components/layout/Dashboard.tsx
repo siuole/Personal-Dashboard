@@ -7,7 +7,7 @@ import GmailWidget from '../widgets/GmailWidget';
 import TasksWidget from '../widgets/TasksWidget';
 import StravaWidget from '../widgets/StravaWidget';
 import GoalsWidget from '../widgets/GoalsWidget';
-import { saveToken, isAuthenticated, clearToken } from '../../services/google-auth';
+import { saveToken, isAuthenticated, clearToken, refreshAccessToken, isTokenExpiredSoon, getToken, getRefreshToken } from '../../services/google-auth';
 import QuickLaunch from '../widgets/QuickLaunch';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -20,6 +20,20 @@ const SCOPES = [
 
 function DashboardInner() {
   const [authed, setAuthed] = useState(isAuthenticated());
+
+  // Auto-refresh: on startup and every 55 minutes
+  useEffect(() => {
+    async function tryRefresh() {
+      const ok = await refreshAccessToken();
+      if (ok) setAuthed(true);
+      else { clearToken(); setAuthed(false); }
+    }
+    if (!getToken() && getRefreshToken()) tryRefresh();
+    const interval = setInterval(async () => {
+      if (isTokenExpiredSoon()) await refreshAccessToken();
+    }, 55 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Handle OAuth callback: detect ?code= in URL on page load
   useEffect(() => {
@@ -38,7 +52,7 @@ function DashboardInner() {
         }),
       })
         .then(res => { if (!res.ok) throw new Error('Token exchange failed'); return res.json(); })
-        .then(data => { saveToken(data.access_token, data.expires_in ?? 3600); setAuthed(true); })
+        .then(data => { saveToken(data.access_token, data.expires_in ?? 3600, data.refresh_token); setAuthed(true); })
         .catch(err => console.error('Google token exchange failed', err));
     } else {
       setAuthed(isAuthenticated());
