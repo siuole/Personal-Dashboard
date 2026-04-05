@@ -10,9 +10,7 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(-45deg, #E8F0FE, #EDE8FF, #FFE8F6, #E8F8FF, #FFF0E8);
-  background-size: 400% 400%;
-  animation: mesh-shift 28s ease infinite;
+  background: #F5F5F7;
   color: #1A1D23;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
