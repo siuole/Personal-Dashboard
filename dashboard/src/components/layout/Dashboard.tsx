@@ -81,19 +81,21 @@ function DashboardInner() {
               onClick={handleLogout}
               style={{
                 padding: '0.375em 1em',
-                background: 'rgba(255,255,255,0.08)',
-                border: '1px solid rgba(255,255,255,0.12)',
+                background: '#f0f0f0',
+                border: 0,
                 borderRadius: '0.5em',
                 fontSize: '0.85rem',
                 fontWeight: 600,
-                color: '#E5E7EB',
+                color: '#242424',
                 fontFamily: 'inherit',
                 cursor: 'pointer',
-                backdropFilter: 'blur(8px)',
+                textShadow: '0 0.0625em 0 #fff',
+                boxShadow: 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece',
                 transition: '0.15s ease',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.13)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+              onMouseDown={e => { e.currentTarget.style.translate = '0 0.225em'; e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece'; }}
+              onMouseUp={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'; }}
+              onMouseLeave={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'; }}
             >
               Abmelden
             </button>
@@ -103,20 +105,21 @@ function DashboardInner() {
               className="group flex items-center gap-3 whitespace-nowrap"
               style={{
                 padding: '0.375em 1em',
-                background: 'rgba(99,102,241,0.75)',
-                border: '1px solid rgba(99,102,241,0.9)',
+                background: '#f0f0f0',
+                border: 0,
                 borderRadius: '0.5em',
                 fontSize: '1rem',
                 fontWeight: 600,
-                color: '#F9FAFB',
+                color: '#242424',
                 fontFamily: 'inherit',
                 cursor: 'pointer',
-                backdropFilter: 'blur(8px)',
-                boxShadow: '0 4px 16px rgba(99,102,241,0.3)',
+                textShadow: '0 0.0625em 0 #fff',
+                boxShadow: 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece',
                 transition: '0.15s ease',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.9)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.75)'; }}
+              onMouseDown={e => { e.currentTarget.style.translate = '0 0.225em'; e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 #f4f4f4, 0 0.03em 0 0 #efefef, 0 0.0625em 0 0 #ececec, 0 0.125em 0 0 #e0e0e0, 0 0.125em 0 0 #dedede, 0 0.2em 0 0 #dcdcdc, 0 0.225em 0 0 #cacaca, 0 0.225em 0.375em 0 #cecece'; }}
+              onMouseUp={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'; }}
+              onMouseLeave={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece'; }}
             >
               <GoogleIcon />
               <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: -0.1 }}>

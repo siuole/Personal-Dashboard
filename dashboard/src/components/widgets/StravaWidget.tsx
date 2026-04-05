@@ -10,35 +10,33 @@ import ErrorState from '../layout/ErrorState';
 
 const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
-// Map Strava sport types to German label + color
 const SPORT_META: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  Run:           { label: 'Lauf',      color: '#34D399', bg: 'rgba(52,211,153,0.15)',  icon: '🏃' },
-  Ride:          { label: 'Radfahren', color: '#60A5FA', bg: 'rgba(96,165,250,0.15)',  icon: '🚴' },
-  VirtualRide:   { label: 'Indoor',    color: '#A78BFA', bg: 'rgba(167,139,250,0.15)', icon: '🚴' },
-  Swim:          { label: 'Schwimmen', color: '#38BDF8', bg: 'rgba(56,189,248,0.15)',  icon: '🏊' },
-  Walk:          { label: 'Spazieren', color: '#86EFAC', bg: 'rgba(134,239,172,0.15)', icon: '🚶' },
-  Hike:          { label: 'Wandern',   color: '#D97706', bg: 'rgba(217,119,6,0.15)',   icon: '🥾' },
-  WeightTraining:{ label: 'Kraft',     color: '#F87171', bg: 'rgba(248,113,113,0.15)', icon: '🏋️' },
-  Workout:       { label: 'Training',  color: '#FB923C', bg: 'rgba(251,146,60,0.15)',  icon: '💪' },
-  Yoga:          { label: 'Yoga',      color: '#F9A8D4', bg: 'rgba(249,168,212,0.15)', icon: '🧘' },
-  Soccer:        { label: 'Fußball',   color: '#34D399', bg: 'rgba(52,211,153,0.15)',  icon: '⚽' },
+  Run:           { label: 'Lauf',      color: '#16A34A', bg: 'rgba(22,163,74,0.1)',   icon: '🏃' },
+  Ride:          { label: 'Radfahren', color: '#2563EB', bg: 'rgba(37,99,235,0.1)',   icon: '🚴' },
+  VirtualRide:   { label: 'Indoor',    color: '#7C3AED', bg: 'rgba(124,58,237,0.1)',  icon: '🚴' },
+  Swim:          { label: 'Schwimmen', color: '#0891B2', bg: 'rgba(8,145,178,0.1)',   icon: '🏊' },
+  Walk:          { label: 'Spazieren', color: '#65A30D', bg: 'rgba(101,163,13,0.1)',  icon: '🚶' },
+  Hike:          { label: 'Wandern',   color: '#92400E', bg: 'rgba(146,64,14,0.1)',   icon: '🥾' },
+  WeightTraining:{ label: 'Kraft',     color: '#DC2626', bg: 'rgba(220,38,38,0.1)',   icon: '🏋️' },
+  Workout:       { label: 'Training',  color: '#EA580C', bg: 'rgba(234,88,12,0.1)',   icon: '💪' },
+  Yoga:          { label: 'Yoga',      color: '#DB2777', bg: 'rgba(219,39,119,0.1)',  icon: '🧘' },
+  Soccer:        { label: 'Fußball',   color: '#16A34A', bg: 'rgba(22,163,74,0.1)',   icon: '⚽' },
 };
 function getSportMeta(type: string) {
-  return SPORT_META[type] ?? { label: type, color: '#9CA3AF', bg: 'rgba(156,163,175,0.15)', icon: '⚡' };
+  return SPORT_META[type] ?? { label: type, color: '#6B7280', bg: 'rgba(107,114,128,0.1)', icon: '⚡' };
 }
 
-// Circular progress ring
 function GoalRing({ progress, goal }: { progress: number; goal: number }) {
   const r = 22;
   const circumference = 2 * Math.PI * r;
   const filled = Math.min(progress / goal, 1);
   const dash = filled * circumference;
-  const ringColor = progress >= goal ? '#F97316' : '#818CF8';
+  const ringColor = progress >= goal ? '#F97316' : '#6366F1';
 
   return (
     <div style={{ position: 'relative', width: 60, height: 60, flexShrink: 0 }}>
       <svg width="60" height="60" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="30" cy="30" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="5" />
+        <circle cx="30" cy="30" r={r} fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="5" />
         <circle
           cx="30" cy="30" r={r} fill="none"
           stroke={ringColor}
@@ -53,15 +51,14 @@ function GoalRing({ progress, goal }: { progress: number; goal: number }) {
         display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
       }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color: progress >= goal ? '#F97316' : '#F9FAFB', lineHeight: 1 }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color: progress >= goal ? '#F97316' : '#111827', lineHeight: 1 }}>
           {progress}
         </span>
-        <span style={{ fontSize: 9, color: '#6B7280', fontWeight: 500 }}>/{goal}</span>
+        <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 500 }}>/{goal}</span>
       </div>
     </div>
   );
 }
-
 
 function BarChart({ dailyKm }: { dailyKm: Record<string, number> }) {
   const values = DAY_LABELS.map((d) => dailyKm[d] ?? 0);
@@ -80,11 +77,11 @@ function BarChart({ dailyKm }: { dailyKm: Record<string, number> }) {
                 width: '100%',
                 height: `${Math.max(pct, hasActivity ? 12 : 4)}%`,
                 borderRadius: '4px 4px 2px 2px',
-                background: hasActivity ? (isToday ? '#FC4C02' : 'rgba(255,255,255,0.55)') : 'rgba(255,255,255,0.07)',
+                background: hasActivity ? (isToday ? '#FC4C02' : 'rgba(0,0,0,0.65)') : 'rgba(0,0,0,0.07)',
                 transition: 'height 0.4s ease',
               }} title={hasActivity ? `${values[i].toFixed(1)} km` : ''} />
             </div>
-            <span style={{ fontSize: 9, fontWeight: isToday ? 700 : 500, color: isToday ? '#F97316' : '#4B5563' }}>
+            <span style={{ fontSize: 9, fontWeight: isToday ? 700 : 500, color: isToday ? '#F97316' : '#9CA3AF' }}>
               {label}
             </span>
           </div>
@@ -102,9 +99,6 @@ function StravaSkeleton() {
         <SkeletonBlock className="w-14 h-14 rounded-full" />
         <SkeletonBlock className="flex-1 h-14 rounded-2xl" />
         <SkeletonBlock className="flex-1 h-14 rounded-2xl" />
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
-        {[0,1,2].map(i => <SkeletonBlock key={i} className="h-12 rounded-xl" />)}
       </div>
       <SkeletonBlock className="flex-1 rounded-xl" />
     </div>
@@ -157,29 +151,21 @@ export default function StravaWidget() {
     return () => clearInterval(interval);
   }, [authed, weekOffset, load]);
 
-  // ── Header (always shown when authed) ──────────────────────────────────
   const header = (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-      <a
-        href="https://www.strava.com/dashboard"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}
-        className="group"
-      >
+      <a href="https://www.strava.com/dashboard" target="_blank" rel="noopener noreferrer"
+        style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }} className="group">
         <StravaLogo />
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#6B7280', letterSpacing: 0.8, textTransform: 'uppercase' }}
-          className="group-hover:text-gray-400 transition-colors">
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.8, textTransform: 'uppercase' }}
+          className="group-hover:text-gray-600 transition-colors">
           {stats?.weekLabel ?? 'Strava'}
         </span>
       </a>
     </div>
   );
 
-  // ── States ──────────────────────────────────────────────────────────────
   if (exchanging) return (
-    <div style={wrapperStyle}>
-      {header}
+    <div style={wrapperStyle}>{header}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="w-5 h-5 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
       </div>
@@ -187,11 +173,14 @@ export default function StravaWidget() {
   );
 
   if (!authed) return (
-    <div style={wrapperStyle}>
-      {header}
+    <div style={wrapperStyle}>{header}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-        <p style={{ fontSize: 12, color: '#6B7280' }}>Verbinde dein Strava-Konto</p>
-        <button onClick={initiateStravaAuth} style={connectBtnStyle}>
+        <p style={{ fontSize: 12, color: '#9CA3AF' }}>Verbinde dein Strava-Konto</p>
+        <button onClick={initiateStravaAuth} style={connectBtnStyle}
+          onMouseDown={e => { e.currentTarget.style.translate = '0 0.225em'; e.currentTarget.style.boxShadow = SHOP; }}
+          onMouseUp={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = SHO; }}
+          onMouseLeave={e => { e.currentTarget.style.translate = ''; e.currentTarget.style.boxShadow = SHO; }}
+        >
           <StravaLogo size={16} /> Mit Strava verbinden
         </button>
       </div>
@@ -201,8 +190,7 @@ export default function StravaWidget() {
   if (loading && !stats) return <StravaSkeleton />;
 
   if (error) return (
-    <div style={wrapperStyle}>
-      {header}
+    <div style={wrapperStyle}>{header}
       <ErrorState message={error} onRetry={() => load(weekOffset)} />
     </div>
   );
@@ -216,47 +204,35 @@ export default function StravaWidget() {
   return (
     <div style={wrapperStyle}>
       {header}
-
-      {/* ── Gamification + KPIs ── */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-        {/* Goal ring */}
-        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+        <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: 14, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
           <GoalRing progress={stats.goalProgress} goal={stats.weekGoal} />
           <div>
-            <div style={{ fontSize: 10, fontWeight: 600, color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Wochenziel</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#F9FAFB', marginTop: 2 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.5, textTransform: 'uppercase' }}>Wochenziel</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginTop: 2 }}>
               {stats.goalProgress >= stats.weekGoal ? '🎉 Erreicht!' : `noch ${stats.weekGoal - stats.goalProgress}`}
             </div>
-            <div style={{ fontSize: 11, color: '#6B7280' }}>{stats.activityCount} Einheit{stats.activityCount !== 1 ? 'en' : ''}</div>
+            <div style={{ fontSize: 11, color: '#9CA3AF' }}>{stats.activityCount} Einheit{stats.activityCount !== 1 ? 'en' : ''}</div>
           </div>
         </div>
-
-        {/* Streak */}
-        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+        <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: 14, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
           <span style={{ fontSize: 26 }}>{stats.streak >= 4 ? '🔥' : stats.streak >= 1 ? '⚡' : '💤'}</span>
           <div>
-            <div style={{ fontSize: 10, fontWeight: 600, color: '#6B7280', letterSpacing: 0.5, textTransform: 'uppercase' }}>Streak</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: stats.streak >= 4 ? '#FB923C' : '#F9FAFB', lineHeight: 1.1 }}>
-              {stats.streak} <span style={{ fontSize: 11, color: '#6B7280', fontWeight: 400 }}>{stats.streak === 1 ? 'Wo.' : 'Wo.'}</span>
+            <div style={{ fontSize: 10, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.5, textTransform: 'uppercase' }}>Streak</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: stats.streak >= 4 ? '#EA580C' : '#111827', lineHeight: 1.1 }}>
+              {stats.streak} <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 400 }}>Wo.</span>
             </div>
           </div>
         </div>
-
-        {/* KPIs */}
         <KpiTile label="km" value={`${stats.totalKm}`} accent />
         <KpiTile label="Zeit" value={timeLabel} />
       </div>
-
-      {/* ── Activity pills ── */}
       {stats.activities.length > 0 && (
         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 10 }}>
           {stats.activities.map((a, i) => {
             const meta = getSportMeta(a.type);
             return (
-              <span key={i} style={{
-                fontSize: 11, fontWeight: 500, color: meta.color, background: meta.bg,
-                borderRadius: 99, padding: '3px 9px', display: 'flex', alignItems: 'center', gap: 4,
-              }}>
+              <span key={i} style={{ fontSize: 11, fontWeight: 500, color: meta.color, background: meta.bg, borderRadius: 99, padding: '3px 9px', display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span>{meta.icon}</span>
                 <span>{meta.label}{a.km > 0 ? ` · ${a.km} km` : ` · ${a.minutes}m`}</span>
               </span>
@@ -264,8 +240,6 @@ export default function StravaWidget() {
           })}
         </div>
       )}
-
-      {/* ── Bar chart ── */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
         <BarChart dailyKm={stats.dailyKm} />
       </div>
@@ -273,32 +247,25 @@ export default function StravaWidget() {
   );
 }
 
-// ── Shared styles ──────────────────────────────────────────────────────────
-const wrapperStyle: React.CSSProperties = {
-  display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0,
-};
+const wrapperStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 };
 
 function KpiTile({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div style={{
-      background: accent ? 'rgba(252,76,2,0.12)' : 'rgba(255,255,255,0.05)',
-      borderRadius: 12, padding: '12px 14px', flex: 1,
-    }}>
-      <div style={{ fontSize: 9, fontWeight: 600, color: accent ? '#F97316' : '#6B7280', letterSpacing: 0.6, textTransform: 'uppercase' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: 16, fontWeight: 700, color: accent ? '#FB923C' : '#F9FAFB', lineHeight: 1.3, letterSpacing: -0.3 }}>
-        {value}
-      </div>
+    <div style={{ background: accent ? 'rgba(252,76,2,0.08)' : 'rgba(0,0,0,0.04)', borderRadius: 12, padding: '12px 14px', flex: 1 }}>
+      <div style={{ fontSize: 9, fontWeight: 600, color: accent ? '#F97316' : '#9CA3AF', letterSpacing: 0.6, textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: accent ? '#EA580C' : '#111827', lineHeight: 1.3, letterSpacing: -0.3 }}>{value}</div>
     </div>
   );
 }
+
+const SHO = 'inset 0 0.0625em 0 0 rgba(255,255,255,0.25), 0 0.0625em 0 0 #d94002, 0 0.125em 0 0 #d03c00, 0 0.25em 0 0 #c43800, 0 0.3125em 0 0 #b83400, 0 0.375em 0 0 #ac3000, 0 0.425em 0 0 #9a2c00, 0 0.425em 0.5em 0 #9e2e00';
+const SHOP = 'inset 0 0.03em 0 0 rgba(255,255,255,0.25), 0 0.03em 0 0 #d94002, 0 0.0625em 0 0 #d03c00, 0 0.125em 0 0 #c43800, 0 0.125em 0 0 #b83400, 0 0.2em 0 0 #ac3000, 0 0.225em 0 0 #9a2c00, 0 0.225em 0.375em 0 #9e2e00';
 
 const connectBtnStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 8,
   background: '#FC4C02', color: 'white', border: 'none',
   borderRadius: '0.5em', padding: '0.5em 1em', fontSize: 13,
   fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
-  boxShadow: '0 4px 16px rgba(252,76,2,0.35)',
-  transition: '0.15s ease',
+  textShadow: '0 0.0625em 0 rgba(0,0,0,0.3)',
+  boxShadow: SHO, transition: '0.15s ease',
 };

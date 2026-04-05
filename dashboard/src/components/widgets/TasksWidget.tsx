@@ -17,10 +17,10 @@ function formatDue(iso?: string): string | null {
 function dueBadge(iso?: string): { label: string; color: string; bg: string } | null {
   if (!iso) return null;
   const diff = Math.ceil((new Date(iso).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-  if (diff < 0) return { label: 'Überfällig', color: '#F87171', bg: 'rgba(239,68,68,0.15)' };
-  if (diff === 0) return { label: 'Heute',     color: '#FB923C', bg: 'rgba(234,88,12,0.15)' };
-  if (diff === 1) return { label: 'Morgen',    color: '#FCD34D', bg: 'rgba(217,119,6,0.15)' };
-  return { label: formatDue(iso)!, color: '#6B7280', bg: 'rgba(107,114,128,0.15)' };
+  if (diff < 0) return { label: 'Überfällig', color: '#DC2626', bg: 'rgba(220,38,38,0.1)' };
+  if (diff === 0) return { label: 'Heute',     color: '#EA580C', bg: 'rgba(234,88,12,0.1)' };
+  if (diff === 1) return { label: 'Morgen',    color: '#D97706', bg: 'rgba(217,119,6,0.1)' };
+  return { label: formatDue(iso)!, color: '#6B7280', bg: 'rgba(107,114,128,0.1)' };
 }
 
 function TasksSkeleton() {
@@ -28,8 +28,8 @@ function TasksSkeleton() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <SkeletonLine className="w-20 h-3 mb-4" />
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
+        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+          <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.07)', flexShrink: 0 }} />
           <SkeletonLine className={`h-3 ${i % 2 === 0 ? 'w-3/4' : 'w-1/2'}`} />
         </div>
       ))}
@@ -71,7 +71,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <WidgetLink label="Aufgaben" href="https://tasks.google.com" />
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B7280', fontSize: 13 }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', fontSize: 13 }}>
           Anmeldung erforderlich
         </div>
       </div>
@@ -95,8 +95,8 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto' }}>
         {tasks.length === 0 && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-            <div style={{ fontSize: 22, color: '#818CF8' }}>✓</div>
-            <p style={{ fontSize: 13, color: '#6B7280' }}>Alles erledigt!</p>
+            <div style={{ fontSize: 22, color: '#6366F1' }}>✓</div>
+            <p style={{ fontSize: 13, color: '#9CA3AF' }}>Alles erledigt!</p>
           </div>
         )}
         {tasks.map((task, idx) => {
@@ -108,10 +108,10 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '9px 8px 9px 10px',
-                borderBottom: idx < tasks.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                borderBottom: idx < tasks.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none',
                 opacity: isCompleting ? 0.3 : 1,
                 transition: 'opacity 0.2s ease',
-                borderLeft: '2px solid rgba(99,102,241,0.35)',
+                borderLeft: '2px solid rgba(99,102,241,0.2)',
                 borderRadius: '0 8px 8px 0',
                 marginBottom: idx < tasks.length - 1 ? 2 : 0,
               }}
@@ -121,28 +121,34 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
                 disabled={isCompleting}
                 style={{
                   width: 22, height: 22, borderRadius: '50%',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  background: 'rgba(255,255,255,0.07)',
+                  border: 0,
+                  background: '#f0f0f0',
                   flexShrink: 0, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '14px',
+                  textShadow: '0 0.0625em 0 #fff',
+                  boxShadow: 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece',
                   transition: '0.15s ease',
                   outline: 'none',
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.background = '#6366F1';
-                  e.currentTarget.style.borderColor = '#6366F1';
-                  e.currentTarget.style.boxShadow = '0 0 12px rgba(99,102,241,0.5)';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 rgba(255,255,255,0.3), 0 0.0625em 0 0 #4f52d4, 0 0.125em 0 0 #4a4dcc, 0 0.25em 0 0 #4446c0, 0 0.3125em 0 0 #4042b8, 0 0.375em 0 0 #3b3db0, 0 0.425em 0 0 #3234a0, 0 0.425em 0.5em 0 #3436a8';
                   const svg = e.currentTarget.querySelector('svg') as SVGElement | null;
                   if (svg) svg.style.opacity = '1';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.07)';
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
-                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.background = '#f0f0f0';
+                  e.currentTarget.style.translate = '';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.0625em 0 0 #f4f4f4, 0 0.0625em 0 0 #efefef, 0 0.125em 0 0 #ececec, 0 0.25em 0 0 #e0e0e0, 0 0.3125em 0 0 #dedede, 0 0.375em 0 0 #dcdcdc, 0 0.425em 0 0 #cacaca, 0 0.425em 0.5em 0 #cecece';
                   const svg = e.currentTarget.querySelector('svg') as SVGElement | null;
                   if (svg) svg.style.opacity = '0';
                 }}
+                onMouseDown={e => {
+                  e.currentTarget.style.translate = '0 0.225em';
+                  e.currentTarget.style.boxShadow = 'inset 0 0.03em 0 0 rgba(255,255,255,0.3), 0 0.03em 0 0 #4f52d4, 0 0.0625em 0 0 #4a4dcc, 0 0.125em 0 0 #4446c0, 0 0.125em 0 0 #4042b8, 0 0.2em 0 0 #3b3db0, 0 0.225em 0 0 #3234a0, 0 0.225em 0.375em 0 #3436a8';
+                }}
+                onMouseUp={e => { e.currentTarget.style.translate = ''; }}
                 aria-label="Als erledigt markieren"
               >
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none"
@@ -151,7 +157,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
                 </svg>
               </button>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 13, color: '#E5E7EB', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <p style={{ fontSize: 13, color: '#374151', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {task.title}
                 </p>
               </div>
