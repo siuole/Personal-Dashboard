@@ -35,7 +35,7 @@ function DayProgress() {
     <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
       <div style={{
         flex: 1, height: 4, borderRadius: 99,
-        background: 'rgba(0,0,0,0.08)', overflow: 'hidden',
+        background: 'rgba(255,255,255,0.1)', overflow: 'hidden',
       }}>
         <div style={{
           height: '100%', width: `${pct}%`, borderRadius: 99,
@@ -44,7 +44,7 @@ function DayProgress() {
           boxShadow: '0 0 10px rgba(99,102,241,0.5)',
         }} />
       </div>
-      <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 500, whiteSpace: 'nowrap' }}>
+      <span style={{ fontSize: 11, color: '#6B7280', fontWeight: 500, whiteSpace: 'nowrap' }}>
         {Math.round(pct)}% des Tages
       </span>
     </div>
@@ -62,20 +62,20 @@ export default function GreetingWidget() {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
       <div style={{ flex: 1, minWidth: 0 }}>
         <h1 style={{
-          fontSize: 32, fontWeight: 700, color: '#111827',
+          fontSize: 32, fontWeight: 700, color: '#F9FAFB',
           letterSpacing: -0.8, lineHeight: 1.15,
           display: 'flex', alignItems: 'center', gap: 10,
         }}>
           {getGreeting(now.getHours())}, Louis
         </h1>
-        <p style={{ fontSize: 13, color: '#9CA3AF', marginTop: 3, fontWeight: 400 }}>
+        <p style={{ fontSize: 13, color: '#6B7280', marginTop: 3, fontWeight: 400 }}>
           {formatDate(now)}
         </p>
         <DayProgress />
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
         <div style={{
-          fontSize: 52, fontWeight: 200, color: '#111827',
+          fontSize: 52, fontWeight: 200, color: '#F9FAFB',
           letterSpacing: -3, lineHeight: 1,
           fontVariantNumeric: 'tabular-nums',
         }}>

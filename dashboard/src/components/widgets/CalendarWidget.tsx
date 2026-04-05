@@ -9,20 +9,20 @@ const DAY_START = 7;
 const DAY_END = 22;
 const TOTAL_HOURS = DAY_END - DAY_START;
 
-// Pastel translucent event colors – look great on glass cards
+// Pastel translucent event colors – look great on dark glass cards
 const EVENT_STYLES: Record<string, { bg: string; border: string }> = {
-  '1':  { bg: 'rgba(96,165,250,0.72)',  border: '#60A5FA' },
-  '2':  { bg: 'rgba(74,222,128,0.72)',  border: '#4ADE80' },
-  '3':  { bg: 'rgba(167,139,250,0.72)', border: '#A78BFA' },
-  '4':  { bg: 'rgba(248,113,113,0.72)', border: '#F87171' },
-  '5':  { bg: 'rgba(250,204,21,0.72)',  border: '#FACC15' },
-  '6':  { bg: 'rgba(251,146,60,0.72)',  border: '#FB923C' },
-  '7':  { bg: 'rgba(45,212,191,0.72)',  border: '#2DD4BF' },
-  '9':  { bg: 'rgba(99,102,241,0.80)',  border: '#6366F1' },
-  '10': { bg: 'rgba(34,197,94,0.80)',   border: '#22C55E' },
-  '11': { bg: 'rgba(239,68,68,0.80)',   border: '#EF4444' },
+  '1':  { bg: 'rgba(96,165,250,0.55)',  border: '#60A5FA' },
+  '2':  { bg: 'rgba(74,222,128,0.55)',  border: '#4ADE80' },
+  '3':  { bg: 'rgba(167,139,250,0.55)', border: '#A78BFA' },
+  '4':  { bg: 'rgba(248,113,113,0.55)', border: '#F87171' },
+  '5':  { bg: 'rgba(250,204,21,0.55)',  border: '#FACC15' },
+  '6':  { bg: 'rgba(251,146,60,0.55)',  border: '#FB923C' },
+  '7':  { bg: 'rgba(45,212,191,0.55)',  border: '#2DD4BF' },
+  '9':  { bg: 'rgba(99,102,241,0.65)',  border: '#6366F1' },
+  '10': { bg: 'rgba(34,197,94,0.65)',   border: '#22C55E' },
+  '11': { bg: 'rgba(239,68,68,0.65)',   border: '#EF4444' },
 };
-const DEFAULT_EVENT_STYLE = { bg: 'rgba(99,102,241,0.72)', border: '#6366F1' };
+const DEFAULT_EVENT_STYLE = { bg: 'rgba(99,102,241,0.55)', border: '#6366F1' };
 
 function getEventStyle(colorId?: string) {
   return EVENT_STYLES[colorId ?? ''] ?? DEFAULT_EVENT_STYLE;
@@ -136,7 +136,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
     return (
       <div className="flex flex-col h-full">
         <WidgetLink label="Kalender" href="https://calendar.google.com" />
-        <div className="flex-1 flex items-center justify-center text-sm" style={{ color: '#9CA3AF' }}>
+        <div className="flex-1 flex items-center justify-center text-sm" style={{ color: '#6B7280' }}>
           Anmeldung erforderlich
         </div>
       </div>
@@ -164,14 +164,14 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
           const isToday = isSameDay(day, today);
           return (
             <div key={day.toISOString()} className="flex-1 flex flex-col items-center" style={{ borderLeft: '1px solid transparent' }}>
-              <span style={{ fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase' }}>
+              <span style={{ fontSize: 10, color: '#6B7280', textTransform: 'uppercase' }}>
                 {day.toLocaleDateString('de-DE', { weekday: 'short' })}
               </span>
               <span
                 className="text-sm font-semibold w-7 h-7 flex items-center justify-center rounded-full mt-0.5"
                 style={isToday
                   ? { background: '#6366F1', color: 'white' }
-                  : { color: '#374151' }
+                  : { color: '#E5E7EB' }
                 }
               >
                 {day.getDate()}
@@ -185,7 +185,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
       {allDayEvents.length > 0 && (
         <div
           className="flex pl-10 mb-1 flex-shrink-0 pb-1"
-          style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
         >
           {days.map((day) => {
             const dayAllDay = allDayEvents.filter((e) => isSameDay(new Date(e.start), day));
@@ -220,7 +220,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
               <div
                 key={i}
                 className="absolute right-1 -translate-y-1/2"
-                style={{ top: `${(i / TOTAL_HOURS) * 100}%`, fontSize: 9, color: '#9CA3AF', lineHeight: 1 }}
+                style={{ top: `${(i / TOTAL_HOURS) * 100}%`, fontSize: 9, color: '#4B5563', lineHeight: 1 }}
               >
                 {String(DAY_START + i).padStart(2, '0')}
               </div>
@@ -237,8 +237,8 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
                 key={day.toISOString()}
                 className="flex-1 relative"
                 style={{
-                  borderLeft: '1px solid rgba(0,0,0,0.06)',
-                  background: isToday ? 'rgba(99,102,241,0.05)' : 'transparent',
+                  borderLeft: '1px solid rgba(255,255,255,0.06)',
+                  background: isToday ? 'rgba(99,102,241,0.08)' : 'transparent',
                 }}
               >
                 {/* Hour lines */}
@@ -246,7 +246,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
                   <div
                     key={i}
                     className="absolute left-0 right-0"
-                    style={{ top: `${(i / TOTAL_HOURS) * 100}%`, borderTop: '1px solid rgba(0,0,0,0.05)' }}
+                    style={{ top: `${(i / TOTAL_HOURS) * 100}%`, borderTop: '1px solid rgba(255,255,255,0.04)' }}
                   />
                 ))}
 

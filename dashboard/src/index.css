@@ -10,10 +10,10 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(-45deg, #E8F0FE, #EDE8FF, #FFE8F6, #E8F8FF, #FFF0E8);
+  background: linear-gradient(-45deg, #0f1117, #141824, #0d1422, #111827);
   background-size: 400% 400%;
   animation: mesh-shift 28s ease infinite;
-  color: #1A1D23;
+  color: #F9FAFB;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
@@ -22,5 +22,5 @@ body {
 /* Thin glass-compatible scrollbar */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.22); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }
