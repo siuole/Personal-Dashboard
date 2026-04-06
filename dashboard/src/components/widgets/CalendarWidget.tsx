@@ -24,8 +24,25 @@ const EVENT_STYLES: Record<string, { bg: string; border: string; text: string }>
 };
 const DEFAULT_EVENT_STYLE = { bg: 'rgba(99,102,241,0.14)', border: '#6366F1', text: '#3730a3' };
 
-function getEventStyle(colorId?: string) {
-  return EVENT_STYLES[colorId ?? ''] ?? DEFAULT_EVENT_STYLE;
+function hexToRgb(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r},${g},${b}`;
+}
+
+function getEventStyle(colorId?: string, calendarColor?: string) {
+  if (EVENT_STYLES[colorId ?? '']) return EVENT_STYLES[colorId!];
+  if (calendarColor && calendarColor.startsWith('#') && calendarColor.length === 7) {
+    const rgb = hexToRgb(calendarColor);
+    // Darken the color for text by reducing brightness
+    const r = parseInt(calendarColor.slice(1, 3), 16);
+    const g = parseInt(calendarColor.slice(3, 5), 16);
+    const b = parseInt(calendarColor.slice(5, 7), 16);
+    const textColor = `rgb(${Math.round(r * 0.5)},${Math.round(g * 0.5)},${Math.round(b * 0.5)})`;
+    return { bg: `rgba(${rgb},0.14)`, border: calendarColor, text: textColor };
+  }
+  return DEFAULT_EVENT_STYLE;
 }
 
 function isPastDay(day: Date): boolean {
@@ -202,7 +219,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
             return (
               <div key={day.toISOString()} className="flex-1 px-0.5 flex flex-col gap-0.5" style={{ borderLeft: '1px solid transparent' }}>
                 {dayAllDay.map((e) => {
-                  const s = getEventStyle(e.colorId);
+                  const s = getEventStyle(e.colorId, e.calendarColor);
                   return (
                     <div
                       key={e.id}
@@ -267,7 +284,7 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
                 {dayEvents.map((e) => {
                   const top = timeToPercent(e.start);
                   const height = eventHeightPercent(e.start, e.end);
-                  const s = getEventStyle(e.colorId);
+                  const s = getEventStyle(e.colorId, e.calendarColor);
                   return (
                     <div
                       key={e.id}
