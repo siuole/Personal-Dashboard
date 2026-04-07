@@ -59,7 +59,7 @@ function GoalRing({ progress, goal }: { progress: number; goal: number }) {
 }
 
 function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: number }[] }) {
-  const W = 400, H = 90, padX = 20, padTop = 16, padBottom = 28;
+  const W = 400, H = 95, padX = 40, padTop = 18, padBottom = 24;
   const chartH = H - padTop - padBottom;
   const max = Math.max(...weeklyUnits.map((w) => w.count), 1);
   const n = weeklyUnits.length;
@@ -78,33 +78,33 @@ function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: numbe
     return `${acc} C${cpX},${prev.y} ${cpX},${pt.y} ${pt.x},${pt.y}`;
   }, '');
 
-  return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible', display: 'block' }}>
+  const axisY = H - padBottom;
 
+  return (
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: 'block', overflow: 'hidden' }}>
       {/* Y-Achse */}
-      <line x1={padX} y1={padTop} x2={padX} y2={H - padBottom} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+      <line x1={padX} y1={padTop} x2={padX} y2={axisY} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
       {/* X-Achse */}
-      <line x1={padX} y1={H - padBottom} x2={W - padX} y2={H - padBottom} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-      {/* Tick-Linien von X-Achse zu Datenpunkten */}
+      <line x1={padX} y1={axisY} x2={W - padX} y2={axisY} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+      {/* Ticks */}
       {pts.map((pt, i) => (
-        <line key={i} x1={pt.x} y1={H - padBottom} x2={pt.x} y2={H - padBottom + 4} stroke="rgba(0,0,0,0.12)" strokeWidth="1" />
+        <line key={i} x1={pt.x} y1={axisY} x2={pt.x} y2={axisY + 3} stroke="rgba(0,0,0,0.12)" strokeWidth="1" />
       ))}
       {/* Linie */}
       <path d={path} fill="none" stroke="#FC4C02" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-
+      {/* Punkte + Labels */}
       {pts.map((pt, i) => {
         const isLast = i === n - 1;
         return (
           <g key={i}>
             <circle cx={pt.x} cy={pt.y} r={isLast ? 3.5 : 2.5}
-              fill={isLast ? '#FC4C02' : 'white'}
-              stroke="#FC4C02" strokeWidth="1.5" />
+              fill={isLast ? '#FC4C02' : 'white'} stroke="#FC4C02" strokeWidth="1.5" />
             {pt.count > 0 && (
-              <text x={pt.x} y={pt.y - 6} textAnchor="middle" fontSize="9" fontWeight="500" fill="#6B7280" fontFamily="inherit">
+              <text x={pt.x} y={pt.y - 6} textAnchor="middle" fontSize="8" fontWeight="500" fill="#9CA3AF" fontFamily="inherit">
                 {pt.count}
               </text>
             )}
-            <text x={pt.x} y={H - 4} textAnchor="middle" fontSize="9" fontWeight={isLast ? '600' : '400'} fill={isLast ? '#FC4C02' : '#9CA3AF'} fontFamily="inherit">
+            <text x={pt.x} y={H - 6} textAnchor="middle" fontSize="8.5" fontWeight={isLast ? '600' : '400'} fill={isLast ? '#FC4C02' : '#9CA3AF'} fontFamily="inherit">
               {pt.label}
             </text>
           </g>
@@ -228,27 +228,36 @@ export default function StravaWidget() {
     <div style={wrapperStyle}>
       {header}
       <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-        <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: 14, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
+        {/* Wochenziel */}
+        <div style={kpiTileStyle}>
+          <div style={kpiLabelStyle}>Ziel</div>
           <GoalRing progress={stats.goalProgress} goal={stats.weekGoal} />
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.5, textTransform: 'uppercase' }}>Wochenziel</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginTop: 2 }}>
-              {stats.goalProgress >= stats.weekGoal ? '🎉 Erreicht!' : `noch ${stats.weekGoal - stats.goalProgress}`}
-            </div>
-            <div style={{ fontSize: 11, color: '#9CA3AF' }}>{stats.activityCount} Einheit{stats.activityCount !== 1 ? 'en' : ''}</div>
+          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>
+            {stats.goalProgress >= stats.weekGoal ? 'Erreicht' : `noch ${stats.weekGoal - stats.goalProgress}`}
           </div>
         </div>
-        <div style={{ background: 'rgba(0,0,0,0.04)', borderRadius: 14, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
-          <span style={{ fontSize: 26 }}>{stats.streak >= 4 ? '🔥' : stats.streak >= 1 ? '⚡' : '💤'}</span>
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.5, textTransform: 'uppercase' }}>Streak</div>
-            <div style={{ fontSize: 20, fontWeight: 700, color: stats.streak >= 4 ? '#EA580C' : '#111827', lineHeight: 1.1 }}>
-              {stats.streak} <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 400 }}>Wo.</span>
-            </div>
+        {/* Streak */}
+        <div style={kpiTileStyle}>
+          <div style={kpiLabelStyle}>Streak</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: stats.streak >= 4 ? '#EA580C' : '#111827', lineHeight: 1 }}>
+            {stats.streak}
+          </div>
+          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>
+            {stats.streak >= 4 ? '🔥' : stats.streak >= 1 ? '⚡' : '💤'} Wo.
           </div>
         </div>
-        <KpiTile label="km" value={`${stats.totalKm}`} />
-        <KpiTile label="Zeit" value={timeLabel} />
+        {/* KM */}
+        <div style={kpiTileStyle}>
+          <div style={kpiLabelStyle}>KM</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{stats.totalKm}</div>
+          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>km</div>
+        </div>
+        {/* Zeit */}
+        <div style={kpiTileStyle}>
+          <div style={kpiLabelStyle}>Zeit</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{timeLabel}</div>
+          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>aktiv</div>
+        </div>
       </div>
       {stats.activities.length > 0 && (
         <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 10 }}>
@@ -272,14 +281,14 @@ export default function StravaWidget() {
 
 const wrapperStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 };
 
-function KpiTile({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <div style={{ background: accent ? 'rgba(252,76,2,0.08)' : 'rgba(0,0,0,0.04)', borderRadius: 12, padding: '12px 14px', flex: 1 }}>
-      <div style={{ fontSize: 9, fontWeight: 600, color: accent ? '#F97316' : '#9CA3AF', letterSpacing: 0.6, textTransform: 'uppercase' }}>{label}</div>
-      <div style={{ fontSize: 16, fontWeight: 700, color: accent ? '#EA580C' : '#111827', lineHeight: 1.3, letterSpacing: -0.3 }}>{value}</div>
-    </div>
-  );
-}
+const kpiTileStyle: React.CSSProperties = {
+  background: 'rgba(0,0,0,0.04)', borderRadius: 12, padding: '10px 8px',
+  flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1,
+};
+const kpiLabelStyle: React.CSSProperties = {
+  fontSize: 9, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.7,
+  textTransform: 'uppercase', marginBottom: 4,
+};
 
 const SHO = 'inset 0 0.0625em 0 0 rgba(255,255,255,0.25), 0 0.0625em 0 0 #d94002, 0 0.125em 0 0 #d03c00, 0 0.25em 0 0 #c43800, 0 0.3125em 0 0 #b83400, 0 0.375em 0 0 #ac3000, 0 0.425em 0 0 #9a2c00, 0 0.425em 0.5em 0 #9e2e00';
 const SHOP = 'inset 0 0.03em 0 0 rgba(255,255,255,0.25), 0 0.03em 0 0 #d94002, 0 0.0625em 0 0 #d03c00, 0 0.125em 0 0 #c43800, 0 0.125em 0 0 #b83400, 0 0.2em 0 0 #ac3000, 0 0.225em 0 0 #9a2c00, 0 0.225em 0.375em 0 #9e2e00';
