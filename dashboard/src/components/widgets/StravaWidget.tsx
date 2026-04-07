@@ -25,92 +25,86 @@ function getSportMeta(type: string) {
 }
 
 function GoalRing({ progress, goal }: { progress: number; goal: number }) {
-  const r = 22;
+  const r = 18;
   const circumference = 2 * Math.PI * r;
   const filled = Math.min(progress / goal, 1);
-  const dash = filled * circumference;
   const ringColor = progress >= goal ? '#F97316' : '#6366F1';
-
   return (
-    <div style={{ position: 'relative', width: 60, height: 60, flexShrink: 0 }}>
-      <svg width="60" height="60" style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx="30" cy="30" r={r} fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="5" />
-        <circle
-          cx="30" cy="30" r={r} fill="none"
-          stroke={ringColor}
-          strokeWidth="5"
+    <div style={{ position: 'relative', width: 48, height: 48, flexShrink: 0 }}>
+      <svg width="48" height="48" style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx="24" cy="24" r={r} fill="none" stroke="rgba(0,0,0,0.08)" strokeWidth="4" />
+        <circle cx="24" cy="24" r={r} fill="none" stroke={ringColor} strokeWidth="4"
           strokeLinecap="round"
-          strokeDasharray={`${dash} ${circumference}`}
-          style={{ transition: 'stroke-dasharray 0.6s ease', filter: `drop-shadow(0 0 4px ${ringColor}88)` }}
-        />
+          strokeDasharray={`${filled * circumference} ${circumference}`}
+          style={{ transition: 'stroke-dasharray 0.6s ease' }} />
       </svg>
-      <div style={{
-        position: 'absolute', inset: 0,
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-      }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color: progress >= goal ? '#F97316' : '#111827', lineHeight: 1 }}>
-          {progress}
-        </span>
-        <span style={{ fontSize: 9, color: '#9CA3AF', fontWeight: 500 }}>/{goal}</span>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: progress >= goal ? '#F97316' : '#111827', lineHeight: 1 }}>{progress}</span>
+        <span style={{ fontSize: 8, color: '#9CA3AF' }}>/{goal}</span>
       </div>
     </div>
   );
 }
 
 function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: number }[] }) {
-  const W = 400, H = 95, padX = 40, padTop = 18, padBottom = 24;
-  const chartH = H - padTop - padBottom;
+  // Fixed coordinate space — labels rendered as HTML outside SVG to avoid clipping
+  const W = 320, plotH = 60, padX = 20;
   const max = Math.max(...weeklyUnits.map((w) => w.count), 1);
   const n = weeklyUnits.length;
 
-  const pts = weeklyUnits.map((w, i) => ({
-    x: padX + (i / (n - 1)) * (W - padX * 2),
-    y: padTop + (1 - w.count / max) * chartH,
-    count: w.count,
-    label: w.label,
-  }));
+  const xs = weeklyUnits.map((_, i) => padX + (i / (n - 1)) * (W - padX * 2));
+  const ys = weeklyUnits.map((w) => 8 + (1 - w.count / max) * (plotH - 16));
 
-  const path = pts.reduce((acc, pt, i) => {
-    if (i === 0) return `M${pt.x},${pt.y}`;
-    const prev = pts[i - 1];
-    const cpX = (prev.x + pt.x) / 2;
-    return `${acc} C${cpX},${prev.y} ${cpX},${pt.y} ${pt.x},${pt.y}`;
+  const path = xs.reduce((acc, x, i) => {
+    if (i === 0) return `M${x},${ys[i]}`;
+    const cpX = (xs[i - 1] + x) / 2;
+    return `${acc} C${cpX},${ys[i - 1]} ${cpX},${ys[i]} ${x},${ys[i]}`;
   }, '');
 
-  const axisY = H - padBottom;
-
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ display: 'block', overflow: 'hidden' }}>
-      {/* Y-Achse */}
-      <line x1={padX} y1={padTop} x2={padX} y2={axisY} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-      {/* X-Achse */}
-      <line x1={padX} y1={axisY} x2={W - padX} y2={axisY} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
-      {/* Ticks */}
-      {pts.map((pt, i) => (
-        <line key={i} x1={pt.x} y1={axisY} x2={pt.x} y2={axisY + 3} stroke="rgba(0,0,0,0.12)" strokeWidth="1" />
-      ))}
-      {/* Linie */}
-      <path d={path} fill="none" stroke="#FC4C02" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      {/* Punkte + Labels */}
-      {pts.map((pt, i) => {
-        const isLast = i === n - 1;
-        return (
-          <g key={i}>
-            <circle cx={pt.x} cy={pt.y} r={isLast ? 3.5 : 2.5}
-              fill={isLast ? '#FC4C02' : 'white'} stroke="#FC4C02" strokeWidth="1.5" />
-            {pt.count > 0 && (
-              <text x={pt.x} y={pt.y - 6} textAnchor="middle" fontSize="8" fontWeight="500" fill="#9CA3AF" fontFamily="inherit">
-                {pt.count}
-              </text>
-            )}
-            <text x={pt.x} y={H - 6} textAnchor="middle" fontSize="8.5" fontWeight={isLast ? '600' : '400'} fill={isLast ? '#FC4C02' : '#9CA3AF'} fontFamily="inherit">
-              {pt.label}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
+    <div style={{ width: '100%', overflow: 'hidden' }}>
+      {/* SVG: line + dots only */}
+      <svg viewBox={`0 0 ${W} ${plotH}`} preserveAspectRatio="none"
+        style={{ width: '100%', height: plotH, display: 'block', overflow: 'visible' }}>
+        {/* Axes */}
+        <line x1={padX} y1={0} x2={padX} y2={plotH} stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+        <line x1={padX} y1={plotH - 1} x2={W - padX} y2={plotH - 1} stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+        {/* Ticks */}
+        {xs.map((x, i) => (
+          <line key={i} x1={x} y1={plotH - 1} x2={x} y2={plotH + 3} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+        ))}
+        {/* Line */}
+        <path d={path} fill="none" stroke="#FC4C02" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Dots + count labels */}
+        {xs.map((x, i) => {
+          const isLast = i === n - 1;
+          return (
+            <g key={i}>
+              <circle cx={x} cy={ys[i]} r={isLast ? 3.5 : 2.5}
+                fill={isLast ? '#FC4C02' : '#fff'} stroke="#FC4C02" strokeWidth="1.5" />
+              {weeklyUnits[i].count > 0 && (
+                <text x={x} y={ys[i] - 6} textAnchor="middle"
+                  style={{ fontSize: '8px', fill: '#9CA3AF', fontFamily: 'inherit' }}>
+                  {weeklyUnits[i].count}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* X-axis labels as HTML — never clipped */}
+      <div style={{ display: 'flex', paddingLeft: `${(padX / W) * 100}%`, paddingRight: `${(padX / W) * 100}%`, marginTop: 4 }}>
+        {weeklyUnits.map((w, i) => {
+          const isLast = i === n - 1;
+          return (
+            <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 9, fontWeight: isLast ? 600 : 400, color: isLast ? '#FC4C02' : '#9CA3AF' }}>
+              {w.label}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -118,10 +112,8 @@ function StravaSkeleton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 12 }}>
       <SkeletonLine className="w-32 h-3" />
-      <div style={{ display: 'flex', gap: 10 }}>
-        <SkeletonBlock className="w-14 h-14 rounded-full" />
-        <SkeletonBlock className="flex-1 h-14 rounded-2xl" />
-        <SkeletonBlock className="flex-1 h-14 rounded-2xl" />
+      <div style={{ display: 'flex', gap: 8 }}>
+        {[0,1,2,3].map(i => <SkeletonBlock key={i} className="flex-1 h-16 rounded-xl" />)}
       </div>
       <SkeletonBlock className="flex-1 rounded-xl" />
     </div>
@@ -175,12 +167,11 @@ export default function StravaWidget() {
   }, [authed, weekOffset, load]);
 
   const header = (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+    <div style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
       <a href="https://www.strava.com/dashboard" target="_blank" rel="noopener noreferrer"
-        style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }} className="group">
+        style={{ display: 'flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
         <StravaLogo />
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.8, textTransform: 'uppercase' }}
-          className="group-hover:text-gray-600 transition-colors">
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.8, textTransform: 'uppercase' }}>
           {stats?.weekLabel ?? 'Strava'}
         </span>
       </a>
@@ -188,7 +179,7 @@ export default function StravaWidget() {
   );
 
   if (exchanging) return (
-    <div style={wrapperStyle}>{header}
+    <div style={wrap}>{header}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="w-5 h-5 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
       </div>
@@ -196,7 +187,7 @@ export default function StravaWidget() {
   );
 
   if (!authed) return (
-    <div style={wrapperStyle}>{header}
+    <div style={wrap}>{header}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
         <p style={{ fontSize: 12, color: '#9CA3AF' }}>Verbinde dein Strava-Konto</p>
         <button onClick={initiateStravaAuth} style={connectBtnStyle}
@@ -211,13 +202,7 @@ export default function StravaWidget() {
   );
 
   if (loading && !stats) return <StravaSkeleton />;
-
-  if (error) return (
-    <div style={wrapperStyle}>{header}
-      <ErrorState message={error} onRetry={() => load(weekOffset)} />
-    </div>
-  );
-
+  if (error) return <div style={wrap}>{header}<ErrorState message={error} onRetry={() => load(weekOffset)} /></div>;
   if (!stats) return null;
 
   const totalHours = Math.floor(stats.totalMinutes / 60);
@@ -225,70 +210,75 @@ export default function StravaWidget() {
   const timeLabel  = totalHours > 0 ? `${totalHours}h ${totalMins}m` : `${totalMins}m`;
 
   return (
-    <div style={wrapperStyle}>
+    <div style={wrap}>
       {header}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-        {/* Wochenziel */}
-        <div style={kpiTileStyle}>
-          <div style={kpiLabelStyle}>Ziel</div>
+
+      {/* KPI row — 4 equal tiles */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 7, marginBottom: 10 }}>
+
+        {/* Ziel */}
+        <div style={tile}>
+          <span style={lbl}>Ziel</span>
           <GoalRing progress={stats.goalProgress} goal={stats.weekGoal} />
-          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>
-            {stats.goalProgress >= stats.weekGoal ? 'Erreicht' : `noch ${stats.weekGoal - stats.goalProgress}`}
-          </div>
+          <span style={sub}>{stats.goalProgress >= stats.weekGoal ? '✓ Done' : `noch ${stats.weekGoal - stats.goalProgress}`}</span>
         </div>
+
         {/* Streak */}
-        <div style={kpiTileStyle}>
-          <div style={kpiLabelStyle}>Streak</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: stats.streak >= 4 ? '#EA580C' : '#111827', lineHeight: 1 }}>
+        <div style={tile}>
+          <span style={lbl}>Streak</span>
+          <span style={{ fontSize: 22, fontWeight: 700, lineHeight: 1, color: stats.streak >= 4 ? '#EA580C' : '#111827' }}>
             {stats.streak}
-          </div>
-          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>
-            {stats.streak >= 4 ? '🔥' : stats.streak >= 1 ? '⚡' : '💤'} Wo.
-          </div>
+          </span>
+          <span style={sub}>{stats.streak >= 4 ? '🔥' : stats.streak >= 1 ? '⚡' : '💤'}&nbsp;Wo.</span>
         </div>
+
         {/* KM */}
-        <div style={kpiTileStyle}>
-          <div style={kpiLabelStyle}>KM</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{stats.totalKm}</div>
-          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>km</div>
+        <div style={tile}>
+          <span style={lbl}>KM</span>
+          <span style={{ fontSize: 22, fontWeight: 700, lineHeight: 1, color: '#111827' }}>{stats.totalKm}</span>
+          <span style={sub}>km</span>
         </div>
+
         {/* Zeit */}
-        <div style={kpiTileStyle}>
-          <div style={kpiLabelStyle}>Zeit</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#111827', lineHeight: 1 }}>{timeLabel}</div>
-          <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 2 }}>aktiv</div>
+        <div style={tile}>
+          <span style={lbl}>Zeit</span>
+          <span style={{ fontSize: stats.totalMinutes >= 600 ? 16 : 22, fontWeight: 700, lineHeight: 1, color: '#111827' }}>{timeLabel}</span>
+          <span style={sub}>aktiv</span>
         </div>
       </div>
+
+      {/* Activity tags */}
       {stats.activities.length > 0 && (
-        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 10 }}>
+        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 8, minHeight: 24 }}>
           {stats.activities.map((a, i) => {
             const meta = getSportMeta(a.type);
             return (
-              <span key={i} style={{ fontSize: 11, fontWeight: 500, color: meta.color, background: meta.bg, borderRadius: 99, padding: '3px 9px', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span>{meta.icon}</span>
-                <span>{meta.label}{a.km > 0 ? ` · ${a.km} km` : ` · ${a.minutes}m`}</span>
+              <span key={i} style={{ fontSize: 11, fontWeight: 500, color: meta.color, background: meta.bg, borderRadius: 99, padding: '2px 8px', display: 'flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap' }}>
+                {meta.icon} {meta.label}{a.km > 0 ? ` · ${a.km}km` : ` · ${a.minutes}m`}
               </span>
             );
           })}
         </div>
       )}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+
+      {/* Chart */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'flex-end' }}>
         <LineChart weeklyUnits={stats.weeklyUnits} />
       </div>
     </div>
   );
 }
 
-const wrapperStyle: React.CSSProperties = { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 };
+const wrap: React.CSSProperties = { display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' };
 
-const kpiTileStyle: React.CSSProperties = {
-  background: 'rgba(0,0,0,0.04)', borderRadius: 12, padding: '10px 8px',
-  flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1,
+const tile: React.CSSProperties = {
+  background: 'rgba(0,0,0,0.04)', borderRadius: 10,
+  padding: '8px 6px',
+  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
+  minWidth: 0, overflow: 'hidden',
 };
-const kpiLabelStyle: React.CSSProperties = {
-  fontSize: 9, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.7,
-  textTransform: 'uppercase', marginBottom: 4,
-};
+const lbl: React.CSSProperties = { fontSize: 8.5, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.7, textTransform: 'uppercase' };
+const sub: React.CSSProperties = { fontSize: 9.5, color: '#9CA3AF', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: '100%', textAlign: 'center' };
 
 const SHO = 'inset 0 0.0625em 0 0 rgba(255,255,255,0.25), 0 0.0625em 0 0 #d94002, 0 0.125em 0 0 #d03c00, 0 0.25em 0 0 #c43800, 0 0.3125em 0 0 #b83400, 0 0.375em 0 0 #ac3000, 0 0.425em 0 0 #9a2c00, 0 0.425em 0.5em 0 #9e2e00';
 const SHOP = 'inset 0 0.03em 0 0 rgba(255,255,255,0.25), 0 0.03em 0 0 #d94002, 0 0.0625em 0 0 #d03c00, 0 0.125em 0 0 #c43800, 0 0.125em 0 0 #b83400, 0 0.2em 0 0 #ac3000, 0 0.225em 0 0 #9a2c00, 0 0.225em 0.375em 0 #9e2e00';
