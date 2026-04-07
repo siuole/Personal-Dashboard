@@ -78,18 +78,18 @@ function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: numbe
     return `${acc} C${cpX},${prev.y} ${cpX},${pt.y} ${pt.x},${pt.y}`;
   }, '');
 
-  const areaPath = `${path} L${pts[n - 1].x},${H - padBottom} L${pts[0].x},${H - padBottom} Z`;
-
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible', display: 'block' }}>
-      <defs>
-        <linearGradient id="strava-area" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#FC4C02" stopOpacity="0.1" />
-          <stop offset="100%" stopColor="#FC4C02" stopOpacity="0" />
-        </linearGradient>
-      </defs>
 
-      <path d={areaPath} fill="url(#strava-area)" />
+      {/* Y-Achse */}
+      <line x1={padX} y1={padTop} x2={padX} y2={H - padBottom} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+      {/* X-Achse */}
+      <line x1={padX} y1={H - padBottom} x2={W - padX} y2={H - padBottom} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
+      {/* Tick-Linien von X-Achse zu Datenpunkten */}
+      {pts.map((pt, i) => (
+        <line key={i} x1={pt.x} y1={H - padBottom} x2={pt.x} y2={H - padBottom + 4} stroke="rgba(0,0,0,0.12)" strokeWidth="1" />
+      ))}
+      {/* Linie */}
       <path d={path} fill="none" stroke="#FC4C02" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
       {pts.map((pt, i) => {
