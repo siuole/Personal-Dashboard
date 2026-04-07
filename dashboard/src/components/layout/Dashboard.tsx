@@ -188,8 +188,8 @@ function DashboardInner() {
         </WidgetCard>
       </div>
 
-      {/* Row 2: Wetter | To-Do | Strava — gleiche Breite */}
-      <div className="hidden lg:grid grid-cols-3 gap-5">
+      {/* Row 2: Wetter | To-Do | Strava | Gemini */}
+      <div className="hidden lg:grid grid-cols-4 gap-5">
         <WidgetCard className="p-0 overflow-hidden" style={{ height: '300px' }}>
           <WeatherWidget />
         </WidgetCard>
@@ -198,6 +198,9 @@ function DashboardInner() {
         </WidgetCard>
         <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
           <StravaWidget />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
+          <GeminiWidget />
         </WidgetCard>
       </div>
 
@@ -211,12 +214,6 @@ function DashboardInner() {
         </WidgetCard>
       </div>
 
-      {/* Row 4: Gemini Chat */}
-      <div className="hidden lg:flex justify-center">
-        <WidgetCard className="flex flex-col" style={{ height: '420px', width: '520px' }}>
-          <GeminiWidget />
-        </WidgetCard>
-      </div>
 
       {/* Mobile fallback */}
       <div className="flex flex-col gap-5 lg:hidden">
