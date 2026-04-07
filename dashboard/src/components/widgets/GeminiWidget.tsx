@@ -95,11 +95,14 @@ export default function GeminiWidget() {
         body: JSON.stringify({ messages: newMessages }),
       });
 
-      if (!res.ok) throw new Error('Anfrage fehlgeschlagen');
       const data = await res.json();
+      if (!res.ok) {
+        setError(`Fehler ${res.status}: ${data.error ?? 'Unbekannter Fehler'}`);
+        return;
+      }
       setMessages([...newMessages, { role: 'model', text: data.text }]);
-    } catch {
-      setError('Antwort fehlgeschlagen. Bitte erneut versuchen.');
+    } catch (err) {
+      setError(`Verbindungsfehler: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setLoading(false);
     }
