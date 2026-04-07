@@ -212,8 +212,8 @@ function DashboardInner() {
       </div>
 
       {/* Row 4: Gemini Chat */}
-      <div className="hidden lg:block">
-        <WidgetCard className="flex flex-col" style={{ height: '420px' }}>
+      <div className="hidden lg:flex justify-center">
+        <WidgetCard className="flex flex-col" style={{ height: '420px', width: '520px' }}>
           <GeminiWidget />
         </WidgetCard>
       </div>
