@@ -197,10 +197,10 @@ function DashboardInner() {
           <TasksWidget authenticated={authed} />
         </WidgetCard>
         <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
-          <StravaWidget />
+          <GeminiWidget />
         </WidgetCard>
         <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
-          <GeminiWidget />
+          <StravaWidget />
         </WidgetCard>
       </div>
 
