@@ -124,7 +124,7 @@ export default function GeminiWidget() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
         <GeminiIcon />
         <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: -0.3, color: '#1A1D23' }}>Gemini</span>
-        <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 500, marginLeft: 2 }}>2.0 Flash</span>
+        <span style={{ fontSize: 11, color: '#9CA3AF', fontWeight: 500, marginLeft: 2 }}>2.5 Flash</span>
       </div>
 
       {/* Messages */}
