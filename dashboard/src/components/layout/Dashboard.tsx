@@ -193,7 +193,7 @@ function DashboardInner() {
         <WidgetCard className="p-0 overflow-hidden" style={{ height: '300px' }}>
           <WeatherWidget />
         </WidgetCard>
-        <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '360px' }}>
           <TasksWidget authenticated={authed} />
         </WidgetCard>
         <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
