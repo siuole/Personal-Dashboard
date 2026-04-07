@@ -89,17 +89,29 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
     );
   }
 
+  // Sort: top-level tasks in original order, subtasks immediately after their parent
+  const sortedTasks = (() => {
+    const topLevel = tasks.filter((t) => !t.parent);
+    const subtaskMap = tasks.reduce<Record<string, Task[]>>((acc, t) => {
+      if (t.parent) {
+        acc[t.parent] = [...(acc[t.parent] ?? []), t];
+      }
+      return acc;
+    }, {});
+    return topLevel.flatMap((t) => [t, ...(subtaskMap[t.id] ?? [])]);
+  })();
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <WidgetLink label="Aufgaben" href="https://tasks.google.com" />
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto' }}>
-        {tasks.length === 0 && (
+        {sortedTasks.length === 0 && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <div style={{ fontSize: 22, color: '#6366F1' }}>✓</div>
             <p style={{ fontSize: 13, color: '#9CA3AF' }}>Alles erledigt!</p>
           </div>
         )}
-        {tasks.map((task, idx) => {
+        {sortedTasks.map((task, idx) => {
           const badge = dueBadge(task.due);
           const isCompleting = completing.has(task.id);
           const isSubtask = !!task.parent;
@@ -109,7 +121,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: isSubtask ? '6px 8px 6px 28px' : '9px 8px 9px 10px',
-                borderBottom: idx < tasks.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none',
+                borderBottom: idx < sortedTasks.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none',
                 opacity: isCompleting ? 0.3 : 1,
                 transition: 'opacity 0.2s ease',
                 borderLeft: isSubtask ? '2px solid rgba(99,102,241,0.08)' : '2px solid rgba(99,102,241,0.2)',
