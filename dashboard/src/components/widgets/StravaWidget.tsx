@@ -59,18 +59,18 @@ function GoalRing({ progress, goal }: { progress: number; goal: number }) {
 }
 
 function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: number }[] }) {
-  const W = 260, H = 72, padX = 10, padY = 10;
+  const W = 400, H = 80, padX = 20, padTop = 16, padBottom = 20;
+  const chartH = H - padTop - padBottom;
   const max = Math.max(...weeklyUnits.map((w) => w.count), 1);
   const n = weeklyUnits.length;
 
   const pts = weeklyUnits.map((w, i) => ({
     x: padX + (i / (n - 1)) * (W - padX * 2),
-    y: padY + (1 - w.count / max) * (H - padY * 2 - 18),
+    y: padTop + (1 - w.count / max) * chartH,
     count: w.count,
     label: w.label,
   }));
 
-  // Smooth bezier path
   const path = pts.reduce((acc, pt, i) => {
     if (i === 0) return `M${pt.x},${pt.y}`;
     const prev = pts[i - 1];
@@ -78,42 +78,33 @@ function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: numbe
     return `${acc} C${cpX},${prev.y} ${cpX},${pt.y} ${pt.x},${pt.y}`;
   }, '');
 
-  // Area fill path
-  const areaPath = `${path} L${pts[n - 1].x},${H - 18} L${pts[0].x},${H - 18} Z`;
+  const areaPath = `${path} L${pts[n - 1].x},${H - padBottom} L${pts[0].x},${H - padBottom} Z`;
 
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: 'visible' }}>
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ overflow: 'visible', display: 'block' }}>
       <defs>
         <linearGradient id="strava-area" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#FC4C02" stopOpacity="0.18" />
+          <stop offset="0%" stopColor="#FC4C02" stopOpacity="0.1" />
           <stop offset="100%" stopColor="#FC4C02" stopOpacity="0" />
         </linearGradient>
       </defs>
 
-      {/* Area */}
       <path d={areaPath} fill="url(#strava-area)" />
+      <path d={path} fill="none" stroke="#FC4C02" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
-      {/* Line */}
-      <path d={path} fill="none" stroke="#FC4C02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-        style={{ filter: 'drop-shadow(0 1px 4px rgba(252,76,2,0.35))' }} />
-
-      {/* Dots + labels */}
       {pts.map((pt, i) => {
         const isLast = i === n - 1;
         return (
           <g key={i}>
-            <circle cx={pt.x} cy={pt.y} r={isLast ? 5 : 3.5}
+            <circle cx={pt.x} cy={pt.y} r={isLast ? 3.5 : 2.5}
               fill={isLast ? '#FC4C02' : 'white'}
-              stroke="#FC4C02" strokeWidth={isLast ? 0 : 2}
-              style={{ filter: isLast ? 'drop-shadow(0 0 4px rgba(252,76,2,0.5))' : 'none' }} />
+              stroke="#FC4C02" strokeWidth="1.5" />
             {pt.count > 0 && (
-              <text x={pt.x} y={pt.y - 8} textAnchor="middle"
-                style={{ fontSize: 9, fontWeight: 700, fill: '#374151', fontFamily: 'inherit' }}>
+              <text x={pt.x} y={pt.y - 6} textAnchor="middle" fontSize="9" fontWeight="500" fill="#6B7280" fontFamily="inherit">
                 {pt.count}
               </text>
             )}
-            <text x={pt.x} y={H - 4} textAnchor="middle"
-              style={{ fontSize: 8.5, fill: isLast ? '#FC4C02' : '#9CA3AF', fontWeight: isLast ? 700 : 500, fontFamily: 'inherit' }}>
+            <text x={pt.x} y={H - 4} textAnchor="middle" fontSize="9" fontWeight={isLast ? '600' : '400'} fill={isLast ? '#FC4C02' : '#9CA3AF'} fontFamily="inherit">
               {pt.label}
             </text>
           </g>
