@@ -179,7 +179,7 @@ function DashboardInner() {
       </div>
 
       {/* Row 1: Calendar (breiter) + Gmail (schmaler) */}
-      <div className="hidden lg:grid gap-5" style={{ gridTemplateColumns: '1.7fr 1fr' }}>
+      <div className="hidden lg:grid grid-cols-2 gap-5">
         <WidgetCard className="flex flex-col" style={{ height: '500px' }}>
           <CalendarWidget authenticated={authed} />
         </WidgetCard>
