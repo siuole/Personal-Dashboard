@@ -8,8 +8,6 @@ import {
 import { SkeletonBlock, SkeletonLine } from '../layout/Skeleton';
 import ErrorState from '../layout/ErrorState';
 
-const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-
 const SPORT_META: Record<string, { label: string; color: string; bg: string; icon: string }> = {
   Run:           { label: 'Lauf',      color: '#16A34A', bg: 'rgba(22,163,74,0.1)',   icon: '🏃' },
   Ride:          { label: 'Radfahren', color: '#2563EB', bg: 'rgba(37,99,235,0.1)',   icon: '🚴' },
@@ -60,34 +58,68 @@ function GoalRing({ progress, goal }: { progress: number; goal: number }) {
   );
 }
 
-function BarChart({ dailyKm }: { dailyKm: Record<string, number> }) {
-  const values = DAY_LABELS.map((d) => dailyKm[d] ?? 0);
-  const max = Math.max(...values, 1);
-  const today = (new Date().getDay() + 6) % 7;
+function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: number }[] }) {
+  const W = 260, H = 72, padX = 10, padY = 10;
+  const max = Math.max(...weeklyUnits.map((w) => w.count), 1);
+  const n = weeklyUnits.length;
+
+  const pts = weeklyUnits.map((w, i) => ({
+    x: padX + (i / (n - 1)) * (W - padX * 2),
+    y: padY + (1 - w.count / max) * (H - padY * 2 - 18),
+    count: w.count,
+    label: w.label,
+  }));
+
+  // Smooth bezier path
+  const path = pts.reduce((acc, pt, i) => {
+    if (i === 0) return `M${pt.x},${pt.y}`;
+    const prev = pts[i - 1];
+    const cpX = (prev.x + pt.x) / 2;
+    return `${acc} C${cpX},${prev.y} ${cpX},${pt.y} ${pt.x},${pt.y}`;
+  }, '');
+
+  // Area fill path
+  const areaPath = `${path} L${pts[n - 1].x},${H - 18} L${pts[0].x},${H - 18} Z`;
+
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 48 }}>
-      {DAY_LABELS.map((label, i) => {
-        const pct = (values[i] / max) * 100;
-        const isToday = i === today;
-        const hasActivity = values[i] > 0;
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id="strava-area" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FC4C02" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#FC4C02" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {/* Area */}
+      <path d={areaPath} fill="url(#strava-area)" />
+
+      {/* Line */}
+      <path d={path} fill="none" stroke="#FC4C02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+        style={{ filter: 'drop-shadow(0 1px 4px rgba(252,76,2,0.35))' }} />
+
+      {/* Dots + labels */}
+      {pts.map((pt, i) => {
+        const isLast = i === n - 1;
         return (
-          <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, gap: 3 }}>
-            <div style={{ width: '100%', display: 'flex', alignItems: 'flex-end', height: 36 }}>
-              <div style={{
-                width: '100%',
-                height: `${Math.max(pct, hasActivity ? 12 : 4)}%`,
-                borderRadius: '4px 4px 2px 2px',
-                background: hasActivity ? (isToday ? '#FC4C02' : 'rgba(0,0,0,0.65)') : 'rgba(0,0,0,0.07)',
-                transition: 'height 0.4s ease',
-              }} title={hasActivity ? `${values[i].toFixed(1)} km` : ''} />
-            </div>
-            <span style={{ fontSize: 9, fontWeight: isToday ? 700 : 500, color: isToday ? '#F97316' : '#9CA3AF' }}>
-              {label}
-            </span>
-          </div>
+          <g key={i}>
+            <circle cx={pt.x} cy={pt.y} r={isLast ? 5 : 3.5}
+              fill={isLast ? '#FC4C02' : 'white'}
+              stroke="#FC4C02" strokeWidth={isLast ? 0 : 2}
+              style={{ filter: isLast ? 'drop-shadow(0 0 4px rgba(252,76,2,0.5))' : 'none' }} />
+            {pt.count > 0 && (
+              <text x={pt.x} y={pt.y - 8} textAnchor="middle"
+                style={{ fontSize: 9, fontWeight: 700, fill: '#374151', fontFamily: 'inherit' }}>
+                {pt.count}
+              </text>
+            )}
+            <text x={pt.x} y={H - 4} textAnchor="middle"
+              style={{ fontSize: 8.5, fill: isLast ? '#FC4C02' : '#9CA3AF', fontWeight: isLast ? 700 : 500, fontFamily: 'inherit' }}>
+              {pt.label}
+            </text>
+          </g>
         );
       })}
-    </div>
+    </svg>
   );
 }
 
@@ -224,7 +256,7 @@ export default function StravaWidget() {
             </div>
           </div>
         </div>
-        <KpiTile label="km" value={`${stats.totalKm}`} accent />
+        <KpiTile label="km" value={`${stats.totalKm}`} />
         <KpiTile label="Zeit" value={timeLabel} />
       </div>
       {stats.activities.length > 0 && (
@@ -241,7 +273,7 @@ export default function StravaWidget() {
         </div>
       )}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <BarChart dailyKm={stats.dailyKm} />
+        <LineChart weeklyUnits={stats.weeklyUnits} />
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ export interface WeekStats {
   streak: number;          // consecutive weeks with ≥1 activity
   weekGoal: number;        // target = 3
   goalProgress: number;    // 0–3 (capped)
+  weeklyUnits: { label: string; count: number }[]; // last 4 weeks
 }
 
 const DAY_LABELS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
@@ -141,6 +142,21 @@ export async function fetchWeekActivities(weekOffset = 0): Promise<WeekStats> {
 
   const streak = weekOffset === 0 ? computeStreak(allActivities) : 0;
 
+  // Last 4 weeks activity counts (offset 0 = this week, -1 = last week, ...)
+  const now = new Date();
+  const weeklyUnits = [-3, -2, -1, 0].map((offset) => {
+    const monday = getMondayOf(now);
+    monday.setDate(monday.getDate() + offset * 7);
+    const after = monday.getTime();
+    const before = after + 7 * 24 * 60 * 60 * 1000;
+    const count = allActivities.filter((a) => {
+      const t = new Date(a.start_date).getTime();
+      return t >= after && t < before;
+    }).length;
+    const label = offset === 0 ? 'Diese W.' : offset === -1 ? 'Letzte W.' : `KW${getISOWeek(monday)}`;
+    return { label, count };
+  });
+
   return {
     totalKm: Math.round(totalKm * 10) / 10,
     activityCount: weekActivities.length,
@@ -153,5 +169,14 @@ export async function fetchWeekActivities(weekOffset = 0): Promise<WeekStats> {
     streak,
     weekGoal: WEEK_GOAL,
     goalProgress: Math.min(weekActivities.length, WEEK_GOAL),
+    weeklyUnits,
   };
+}
+
+function getISOWeek(date: Date): number {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+  const week1 = new Date(d.getFullYear(), 0, 4);
+  return 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
 }
