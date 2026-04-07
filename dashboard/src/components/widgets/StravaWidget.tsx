@@ -28,7 +28,7 @@ function GoalRing({ progress, goal }: { progress: number; goal: number }) {
   const r = 18;
   const circumference = 2 * Math.PI * r;
   const filled = Math.min(progress / goal, 1);
-  const ringColor = progress >= goal ? '#F97316' : '#6366F1';
+  const ringColor = '#FC4C02';
   return (
     <div style={{ position: 'relative', width: 48, height: 48, flexShrink: 0 }}>
       <svg width="48" height="48" style={{ transform: 'rotate(-90deg)' }}>
@@ -47,12 +47,13 @@ function GoalRing({ progress, goal }: { progress: number; goal: number }) {
 }
 
 function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: number }[] }) {
-  // Fixed coordinate space — labels rendered as HTML outside SVG to avoid clipping
-  const W = 320, plotH = 60, padX = 20;
-  const max = Math.max(...weeklyUnits.map((w) => w.count), 1);
+  // x positions at centers of equal quarters → aligns with the 4 KPI tiles above
+  const W = 320, plotH = 60;
   const n = weeklyUnits.length;
+  const max = Math.max(...weeklyUnits.map((w) => w.count), 1);
 
-  const xs = weeklyUnits.map((_, i) => padX + (i / (n - 1)) * (W - padX * 2));
+  // Center of each quarter: (2i+1)/(2n) * W
+  const xs = weeklyUnits.map((_, i) => ((2 * i + 1) / (2 * n)) * W);
   const ys = weeklyUnits.map((w) => 8 + (1 - w.count / max) * (plotH - 16));
 
   const path = xs.reduce((acc, x, i) => {
@@ -62,20 +63,18 @@ function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: numbe
   }, '');
 
   return (
-    <div style={{ width: '100%', overflow: 'hidden' }}>
-      {/* SVG: line + dots only */}
+    <div style={{ width: '100%' }}>
       <svg viewBox={`0 0 ${W} ${plotH}`} preserveAspectRatio="none"
-        style={{ width: '100%', height: plotH, display: 'block', overflow: 'visible' }}>
-        {/* Axes */}
-        <line x1={padX} y1={0} x2={padX} y2={plotH} stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-        <line x1={padX} y1={plotH - 1} x2={W - padX} y2={plotH - 1} stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
-        {/* Ticks */}
+        style={{ width: '100%', height: plotH, display: 'block' }}>
+        {/* X-axis */}
+        <line x1={0} y1={plotH - 1} x2={W} y2={plotH - 1} stroke="rgba(0,0,0,0.08)" strokeWidth="1" />
+        {/* Ticks at data points */}
         {xs.map((x, i) => (
           <line key={i} x1={x} y1={plotH - 1} x2={x} y2={plotH + 3} stroke="rgba(0,0,0,0.1)" strokeWidth="1" />
         ))}
         {/* Line */}
         <path d={path} fill="none" stroke="#FC4C02" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        {/* Dots + count labels */}
+        {/* Dots + count */}
         {xs.map((x, i) => {
           const isLast = i === n - 1;
           return (
@@ -93,12 +92,12 @@ function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: numbe
         })}
       </svg>
 
-      {/* X-axis labels as HTML — never clipped */}
-      <div style={{ display: 'flex', paddingLeft: `${(padX / W) * 100}%`, paddingRight: `${(padX / W) * 100}%`, marginTop: 4 }}>
+      {/* Labels — 4 equal columns, aligned with KPI tiles */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', marginTop: 3 }}>
         {weeklyUnits.map((w, i) => {
           const isLast = i === n - 1;
           return (
-            <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 9, fontWeight: isLast ? 600 : 400, color: isLast ? '#FC4C02' : '#9CA3AF' }}>
+            <div key={i} style={{ textAlign: 'center', fontSize: 9, fontWeight: isLast ? 600 : 400, color: isLast ? '#FC4C02' : '#9CA3AF' }}>
               {w.label}
             </div>
           );
