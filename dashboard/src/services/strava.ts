@@ -153,7 +153,7 @@ export async function fetchWeekActivities(weekOffset = 0): Promise<WeekStats> {
       const t = new Date(a.start_date).getTime();
       return t >= after && t < before;
     }).length;
-    const label = offset === 0 ? 'Diese W.' : offset === -1 ? 'Letzte W.' : `KW${getISOWeek(monday)}`;
+    const label = offset === 0 ? 'Diese W.' : `KW${getISOWeek(monday)}`;
     return { label, count };
   });
 

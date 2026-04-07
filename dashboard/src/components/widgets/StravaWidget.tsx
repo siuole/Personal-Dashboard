@@ -59,7 +59,7 @@ function GoalRing({ progress, goal }: { progress: number; goal: number }) {
 }
 
 function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: number }[] }) {
-  const W = 400, H = 80, padX = 20, padTop = 16, padBottom = 20;
+  const W = 400, H = 90, padX = 20, padTop = 16, padBottom = 28;
   const chartH = H - padTop - padBottom;
   const max = Math.max(...weeklyUnits.map((w) => w.count), 1);
   const n = weeklyUnits.length;
@@ -81,7 +81,7 @@ function LineChart({ weeklyUnits }: { weeklyUnits: { label: string; count: numbe
   const areaPath = `${path} L${pts[n - 1].x},${H - padBottom} L${pts[0].x},${H - padBottom} Z`;
 
   return (
-    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ overflow: 'visible', display: 'block' }}>
+    <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible', display: 'block' }}>
       <defs>
         <linearGradient id="strava-area" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#FC4C02" stopOpacity="0.1" />
