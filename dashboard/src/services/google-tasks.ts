@@ -6,6 +6,7 @@ export interface Task {
   due?: string;
   completed: boolean;
   notes?: string;
+  parent?: string;
 }
 
 export async function fetchTasks(): Promise<Task[]> {
@@ -35,6 +36,7 @@ export async function fetchTasks(): Promise<Task[]> {
     due: item.due as string | undefined,
     completed: item.status === 'completed',
     notes: item.notes as string | undefined,
+    parent: item.parent as string | undefined,
   }));
 }
 

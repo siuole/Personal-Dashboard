@@ -102,18 +102,20 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
         {tasks.map((task, idx) => {
           const badge = dueBadge(task.due);
           const isCompleting = completing.has(task.id);
+          const isSubtask = !!task.parent;
           return (
             <div
               key={task.id}
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
-                padding: '9px 8px 9px 10px',
+                padding: isSubtask ? '6px 8px 6px 28px' : '9px 8px 9px 10px',
                 borderBottom: idx < tasks.length - 1 ? '1px solid rgba(0,0,0,0.05)' : 'none',
                 opacity: isCompleting ? 0.3 : 1,
                 transition: 'opacity 0.2s ease',
-                borderLeft: '2px solid rgba(99,102,241,0.2)',
+                borderLeft: isSubtask ? '2px solid rgba(99,102,241,0.08)' : '2px solid rgba(99,102,241,0.2)',
                 borderRadius: '0 8px 8px 0',
                 marginBottom: idx < tasks.length - 1 ? 2 : 0,
+                background: isSubtask ? 'rgba(0,0,0,0.015)' : 'transparent',
               }}
             >
               <button
@@ -157,7 +159,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
                 </svg>
               </button>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 13, color: '#374151', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <p style={{ fontSize: isSubtask ? 12 : 13, color: isSubtask ? '#6B7280' : '#374151', fontWeight: isSubtask ? 400 : 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {task.title}
                 </p>
               </div>
