@@ -9,6 +9,7 @@ import StravaWidget from '../widgets/StravaWidget';
 import GoalsWidget from '../widgets/GoalsWidget';
 import { saveToken, isAuthenticated, clearToken, refreshAccessToken, isTokenExpiredSoon, getToken, getRefreshToken } from '../../services/google-auth';
 import QuickLaunch from '../widgets/QuickLaunch';
+import GeminiWidget from '../widgets/GeminiWidget';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -210,6 +211,13 @@ function DashboardInner() {
         </WidgetCard>
       </div>
 
+      {/* Row 4: Gemini Chat */}
+      <div className="hidden lg:block">
+        <WidgetCard className="flex flex-col" style={{ height: '420px' }}>
+          <GeminiWidget />
+        </WidgetCard>
+      </div>
+
       {/* Mobile fallback */}
       <div className="flex flex-col gap-5 lg:hidden">
         <WidgetCard className="flex flex-col" style={{ height: '480px' }}>
@@ -232,6 +240,9 @@ function DashboardInner() {
         </WidgetCard>
         <WidgetCard className="flex flex-col" style={{ minHeight: '260px' }}>
           <GoalsWidget period="week" />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '420px' }}>
+          <GeminiWidget />
         </WidgetCard>
       </div>
     </div>
