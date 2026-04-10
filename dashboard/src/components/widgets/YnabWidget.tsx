@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { fetchYnabData, getCategoryGroups, formatCurrency } from '../../services/ynab';
+import { fetchYnabData, getCategoryGroups, getDailySpending, formatCurrency } from '../../services/ynab';
 import type { YnabData, CategoryGroup } from '../../services/ynab';
 import ErrorState from '../layout/ErrorState';
 import { SkeletonBlock, SkeletonLine } from '../layout/Skeleton';
@@ -165,6 +165,110 @@ function GroupBar({
   );
 }
 
+function SpendingHeatmap({
+  dailySpending,
+  month,
+  currency,
+}: {
+  dailySpending: Record<string, number>;
+  month: string; // YYYY-MM-01
+  currency: string;
+}) {
+  const [hovered, setHovered] = useState<{ day: number; amount: number } | null>(null);
+
+  const now = new Date();
+  const year = parseInt(month.slice(0, 4));
+  const monthNum = parseInt(month.slice(5, 7));
+  const daysInMonth = new Date(year, monthNum, 0).getDate();
+  const isCurrentMonth = year === now.getFullYear() && monthNum === now.getMonth() + 1;
+  const todayDay = now.getDate();
+
+  const values = Array.from({ length: daysInMonth }, (_, i) => {
+    const day = i + 1;
+    const dateStr = `${month.slice(0, 7)}-${String(day).padStart(2, '0')}`;
+    return { day, amount: dailySpending[dateStr] ?? 0 };
+  });
+
+  const maxAmount = Math.max(...values.map((v) => v.amount), 1);
+
+  function getColor(amount: number, isFuture: boolean): string {
+    if (isFuture) return 'rgba(0,0,0,0.03)';
+    if (amount === 0) return 'rgba(0,0,0,0.05)';
+    const intensity = 0.18 + (amount / maxAmount) * 0.72;
+    return `rgba(249,115,22,${intensity.toFixed(2)})`;
+  }
+
+  const monthName = new Date(year, monthNum - 1, 1).toLocaleDateString('de-DE', { month: 'long' });
+
+  return (
+    <div>
+      {/* Label + live tooltip */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 7, minHeight: 18 }}>
+        {hovered ? (
+          <span style={{ fontSize: 11, color: '#374151' }}>
+            {hovered.day}. {monthName}
+            {' — '}
+            <strong style={{ color: hovered.amount > 0 ? '#F97316' : '#9CA3AF' }}>
+              {hovered.amount > 0 ? formatCurrency(hovered.amount, currency) : 'Keine Ausgaben'}
+            </strong>
+          </span>
+        ) : (
+          <span style={{ fontSize: 9, fontWeight: 600, color: '#9CA3AF', letterSpacing: 0.6, textTransform: 'uppercase' }}>
+            Tägliche Ausgaben
+          </span>
+        )}
+        {/* Legend */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <span style={{ fontSize: 9, color: '#C4C9D4' }}>wenig</span>
+          {[0.18, 0.38, 0.58, 0.72, 0.90].map((o, i) => (
+            <div key={i} style={{ width: 9, height: 9, borderRadius: 2, background: `rgba(249,115,22,${o})` }} />
+          ))}
+          <span style={{ fontSize: 9, color: '#C4C9D4' }}>viel</span>
+        </div>
+      </div>
+
+      {/* Day squares */}
+      <div style={{ display: 'flex', gap: 3 }}>
+        {values.map(({ day, amount }) => {
+          const isFuture = isCurrentMonth && day > todayDay;
+          const isToday = isCurrentMonth && day === todayDay;
+          return (
+            <div
+              key={day}
+              onMouseEnter={() => setHovered({ day, amount })}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                flex: 1,
+                aspectRatio: '1',
+                borderRadius: 3,
+                background: getColor(amount, isFuture),
+                border: isToday ? '1.5px solid rgba(249,115,22,0.7)' : '1.5px solid transparent',
+                transition: 'opacity 0.1s',
+                cursor: 'default',
+              }}
+            />
+          );
+        })}
+      </div>
+
+      {/* Day number labels every 5 days */}
+      <div style={{ display: 'flex', marginTop: 3 }}>
+        {values.map(({ day }) => {
+          const show = day === 1 || day % 5 === 0 || day === daysInMonth;
+          return (
+            <div
+              key={day}
+              style={{ flex: 1, textAlign: 'center', fontSize: 8, color: '#C4C9D4', fontWeight: 500, lineHeight: 1 }}
+            >
+              {show ? day : ''}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function YnabSkeleton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: 12 }}>
@@ -234,8 +338,9 @@ export default function YnabWidget() {
 
   if (!data) return null;
 
-  const { month, currency } = data;
+  const { month, currency, transactions } = data;
   const groups = getCategoryGroups(month.categories);
+  const dailySpending = getDailySpending(transactions);
   const frei = month.to_be_budgeted;
   const freiNegative = frei < 0;
 
@@ -311,9 +416,10 @@ export default function YnabWidget() {
           flex: '1 1 0',
           display: 'flex',
           flexDirection: 'column',
-          gap: 8,
+          gap: 7,
           overflowY: 'auto',
           minHeight: 0,
+          marginBottom: 14,
         }}
       >
         {groups.length === 0 && (
@@ -333,6 +439,11 @@ export default function YnabWidget() {
         {groups.map((g) => (
           <GroupBar key={g.name} group={g} currency={currency} />
         ))}
+      </div>
+
+      {/* Heatmap */}
+      <div style={{ flexShrink: 0, borderTop: '1px solid rgba(0,0,0,0.06)', paddingTop: 12 }}>
+        <SpendingHeatmap dailySpending={dailySpending} month={month.month} currency={currency} />
       </div>
     </div>
   );

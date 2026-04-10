@@ -19,9 +19,27 @@ export interface YnabMonth {
   categories: YnabCategory[];
 }
 
+export interface YnabTransaction {
+  id: string;
+  date: string; // YYYY-MM-DD
+  amount: number; // milliunits, negative = outflow
+  transfer_account_id: string | null;
+}
+
 export interface YnabData {
   month: YnabMonth;
   currency: string;
+  transactions: YnabTransaction[];
+}
+
+// Returns map of YYYY-MM-DD -> total outflow in milliunits (positive values)
+export function getDailySpending(transactions: YnabTransaction[]): Record<string, number> {
+  const daily: Record<string, number> = {};
+  for (const t of transactions) {
+    if (t.amount >= 0 || t.transfer_account_id) continue;
+    daily[t.date] = (daily[t.date] ?? 0) + (-t.amount);
+  }
+  return daily;
 }
 
 export interface CategoryGroup {

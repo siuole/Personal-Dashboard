@@ -217,7 +217,7 @@ function DashboardInner() {
 
       {/* Row 4: YNAB Finanzen */}
       <div className="hidden lg:block">
-        <WidgetCard className="flex flex-col" style={{ height: '240px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '340px' }}>
           <YnabWidget />
         </WidgetCard>
       </div>
@@ -248,7 +248,7 @@ function DashboardInner() {
         <WidgetCard className="flex flex-col" style={{ height: '420px' }}>
           <GeminiWidget />
         </WidgetCard>
-        <WidgetCard className="flex flex-col" style={{ height: '280px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '380px' }}>
           <YnabWidget />
         </WidgetCard>
       </div>
