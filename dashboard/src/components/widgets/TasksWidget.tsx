@@ -257,9 +257,9 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
 
   if (!authenticated) {
     return (
-      <div className="flex flex-col flex-1 min-h-0">
+      <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0px', minHeight: 0 }}>
         <WidgetLink label="Aufgaben" href="https://tasks.google.com" />
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', fontSize: 13 }}>
+        <div style={{ flex: '1 1 0px', minHeight: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', fontSize: 13 }}>
           Anmeldung erforderlich
         </div>
       </div>
@@ -270,7 +270,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
 
   if (error) {
     return (
-      <div className="flex flex-col flex-1 min-h-0">
+      <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0px', minHeight: 0 }}>
         <WidgetLink label="Aufgaben" href="https://tasks.google.com" />
         <ErrorState message={error} onRetry={load} />
       </div>
@@ -287,7 +287,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
   })();
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
+    <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 0px', minHeight: 0 }}>
       <style>{`
         @keyframes task-done-pulse {
           0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
@@ -297,7 +297,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
       `}</style>
       <WidgetLink label="Aufgaben" href="https://tasks.google.com" />
-      <div className="flex-1 overflow-y-auto min-h-0" style={{ paddingBottom: 4 }}>
+      <div style={{ flex: '1 1 0px', minHeight: 0, overflowY: 'auto', paddingBottom: 4 }}>
         {sortedTasks.length === 0 && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <div style={{ fontSize: 22, color: '#6366F1' }}>✓</div>

@@ -194,7 +194,7 @@ function DashboardInner() {
         <WidgetCard className="p-0 overflow-hidden" style={{ height: '380px' }}>
           <WeatherWidget />
         </WidgetCard>
-        <WidgetCard className="flex flex-col" style={{ height: '380px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '380px', overflow: 'hidden' }}>
           <TasksWidget authenticated={authed} />
         </WidgetCard>
         <WidgetCard className="flex flex-col" style={{ height: '380px' }}>
@@ -236,7 +236,7 @@ function DashboardInner() {
         <WidgetCard className="flex flex-col" style={{ minHeight: '260px' }}>
           <StravaWidget />
         </WidgetCard>
-        <WidgetCard className="flex flex-col" style={{ height: '260px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '260px', overflow: 'hidden' }}>
           <TasksWidget authenticated={authed} />
         </WidgetCard>
         <WidgetCard className="flex flex-col" style={{ minHeight: '260px' }}>
