@@ -257,7 +257,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
 
   if (!authenticated) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+      <div className="flex flex-col flex-1 min-h-0">
         <WidgetLink label="Aufgaben" href="https://tasks.google.com" />
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF', fontSize: 13 }}>
           Anmeldung erforderlich
@@ -270,7 +270,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
 
   if (error) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+      <div className="flex flex-col flex-1 min-h-0">
         <WidgetLink label="Aufgaben" href="https://tasks.google.com" />
         <ErrorState message={error} onRetry={load} />
       </div>
@@ -287,7 +287,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
   })();
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col flex-1 min-h-0">
       <style>{`
         @keyframes task-done-pulse {
           0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
