@@ -205,19 +205,15 @@ function DashboardInner() {
         </WidgetCard>
       </div>
 
-      {/* Row 3: Monatsziele | Wochenziele */}
-      <div className="hidden lg:grid grid-cols-2 gap-5">
-        <WidgetCard className="flex flex-col" style={{ height: '280px' }}>
+      {/* Row 3: Monatsziele | Wochenziele | YNAB (doppelt) */}
+      <div className="hidden lg:grid grid-cols-4 gap-5">
+        <WidgetCard className="flex flex-col" style={{ height: '220px' }}>
           <GoalsWidget period="month" />
         </WidgetCard>
-        <WidgetCard className="flex flex-col" style={{ height: '280px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '220px' }}>
           <GoalsWidget period="week" />
         </WidgetCard>
-      </div>
-
-      {/* Row 4: YNAB Finanzen */}
-      <div className="hidden lg:block">
-        <WidgetCard className="flex flex-col" style={{ height: '340px' }}>
+        <WidgetCard className="flex flex-col col-span-2" style={{ height: '220px' }}>
           <YnabWidget />
         </WidgetCard>
       </div>
