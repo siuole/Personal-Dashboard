@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchWeekEvents } from '../../services/google-calendar';
 import type { CalendarEvent } from '../../services/google-calendar';
 import { SkeletonBlock } from '../layout/Skeleton';
@@ -10,7 +10,6 @@ const DAY_START      = 7;
 const DAY_END        = 22;
 const TOTAL_HOURS    = DAY_END - DAY_START;
 const TIME_COL_PX    = 44;
-const HOUR_HEIGHT_PX = 56; // controls zoom level — increase to spread events
 const MAX_ALL_DAY    = 3;
 
 // ─── Color map ────────────────────────────────────────────────────────────────
@@ -179,8 +178,6 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState<string | null>(null);
   const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
-  const scrollRef   = useRef<HTMLDivElement>(null);
-  const hasScrolled = useRef(false);
   const days  = getWeekDays();
   const today = new Date();
 
@@ -198,17 +195,6 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
     const interval = setInterval(load, 10 * 60_000);
     return () => clearInterval(interval);
   }, [load]);
-
-  // Auto-scroll to ~1h before current time on first load
-  useEffect(() => {
-    if (loading || !scrollRef.current || hasScrolled.current) return;
-    const now   = new Date();
-    const hours = now.getHours() + now.getMinutes() / 60;
-    if (hours < DAY_START || hours > DAY_END) return;
-    hasScrolled.current = true;
-    const pct = Math.max(0, (hours - 1.5 - DAY_START) / TOTAL_HOURS);
-    scrollRef.current.scrollTop = pct * scrollRef.current.scrollHeight;
-  }, [loading]);
 
   const allDayEvents = events.filter((e) => e.isAllDay);
   const timedEvents  = events.filter((e) => !e.isAllDay);
@@ -316,12 +302,9 @@ export default function CalendarWidget({ authenticated }: { authenticated: boole
         )}
       </div>
 
-      {/* ── Scrollable time grid ── */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0">
-        <div
-          className="flex relative"
-          style={{ minHeight: TOTAL_HOURS * HOUR_HEIGHT_PX }}
-        >
+      {/* ── Time grid ── */}
+      <div className="flex-1 overflow-hidden min-h-0">
+        <div className="flex h-full">
 
           {/* Time labels */}
           <div className="flex-shrink-0 relative select-none" style={{ width: TIME_COL_PX }}>
