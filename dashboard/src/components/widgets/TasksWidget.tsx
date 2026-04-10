@@ -234,12 +234,12 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
 
   useEffect(() => { load(); }, [load]);
 
-  async function handleComplete(taskId: string) {
+  async function handleComplete(taskId: string, listId: string) {
     const removed = tasks.find((t) => t.id === taskId);
     setTasks((prev) => prev.filter((t) => t.id !== taskId));
     setCompleting((prev) => new Set(prev).add(taskId));
     try {
-      await completeTask(taskId);
+      await completeTask(taskId, listId);
     } catch {
       if (removed) setTasks((prev) => [...prev, removed]);
     } finally {
@@ -330,7 +330,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
               {/* Main row */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <button
-                  onClick={() => handleComplete(task.id)}
+                  onClick={() => handleComplete(task.id, task.listId)}
                   disabled={isCompleting}
                   style={{
                     width: 22, height: 22, borderRadius: '50%',
