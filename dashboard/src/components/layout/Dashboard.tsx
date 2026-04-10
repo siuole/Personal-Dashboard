@@ -191,16 +191,16 @@ function DashboardInner() {
 
       {/* Row 2: Wetter | To-Do | Strava | Gemini */}
       <div className="hidden lg:grid grid-cols-4 gap-5">
-        <WidgetCard className="p-0 overflow-hidden" style={{ height: '300px' }}>
+        <WidgetCard className="p-0 overflow-hidden" style={{ height: '380px' }}>
           <WeatherWidget />
         </WidgetCard>
-        <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '380px' }}>
           <TasksWidget authenticated={authed} />
         </WidgetCard>
-        <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '380px' }}>
           <GeminiWidget />
         </WidgetCard>
-        <WidgetCard className="flex flex-col" style={{ height: '300px' }}>
+        <WidgetCard className="flex flex-col" style={{ height: '380px' }}>
           <StravaWidget />
         </WidgetCard>
       </div>
