@@ -10,6 +10,7 @@ import GoalsWidget from '../widgets/GoalsWidget';
 import { saveToken, isAuthenticated, clearToken, refreshAccessToken, isTokenExpiredSoon, getToken, getRefreshToken } from '../../services/google-auth';
 import QuickLaunch from '../widgets/QuickLaunch';
 import GeminiWidget from '../widgets/GeminiWidget';
+import YnabWidget from '../widgets/YnabWidget';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -214,6 +215,12 @@ function DashboardInner() {
         </WidgetCard>
       </div>
 
+      {/* Row 4: YNAB Finanzen */}
+      <div className="hidden lg:block">
+        <WidgetCard className="flex flex-col" style={{ height: '240px' }}>
+          <YnabWidget />
+        </WidgetCard>
+      </div>
 
       {/* Mobile fallback */}
       <div className="flex flex-col gap-5 lg:hidden">
@@ -240,6 +247,9 @@ function DashboardInner() {
         </WidgetCard>
         <WidgetCard className="flex flex-col" style={{ height: '420px' }}>
           <GeminiWidget />
+        </WidgetCard>
+        <WidgetCard className="flex flex-col" style={{ height: '280px' }}>
+          <YnabWidget />
         </WidgetCard>
       </div>
     </div>
