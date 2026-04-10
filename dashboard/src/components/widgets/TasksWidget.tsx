@@ -297,7 +297,7 @@ export default function TasksWidget({ authenticated }: { authenticated: boolean 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
       `}</style>
       <WidgetLink label="Aufgaben" href="https://tasks.google.com" />
-      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', minHeight: 0 }}>
         {sortedTasks.length === 0 && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             <div style={{ fontSize: 22, color: '#6366F1' }}>✓</div>
